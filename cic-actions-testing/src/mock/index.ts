@@ -9,4 +9,6 @@ export * from "./session";
 export * from "./transaction";
 export * from "./user";
 
+export * as actions from "./actions";
+export * as api from "./api";
 export * as events from "./events";

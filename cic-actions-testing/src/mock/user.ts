@@ -1,5 +1,5 @@
-import { define } from "./define";
 import OktaCIC from "../types";
+import { define } from "./define";
 import { identity } from "./identity";
 
 export const user = define<OktaCIC.User>(() => {

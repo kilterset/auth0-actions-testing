@@ -1,3 +1,4 @@
+export * from "./api/post-login";
 export * from "./authentication";
 export * from "./client";
 export * from "./connection";
@@ -9,4 +10,5 @@ export * from "./session";
 export * from "./transaction";
 export * from "./user";
 
+export * as API from "./api";
 export * as Events from "./events";
