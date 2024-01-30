@@ -13,14 +13,18 @@ export function postLogin({
 }: Parameters<typeof events.postLogin>[0] &
   Omit<PostLoginOptions, "user"> = {}) {
   const event = events.postLogin(attributes);
-  const postLoginApi = api.postLogin({ user: event.user, cache });
+  const { implementation, state } = api.postLogin({
+    user: event.user,
+    cache,
+  });
 
   async function simulate(handler: Handler) {
-    return handler(event, postLoginApi);
+    return handler(event, implementation);
   }
 
   return {
-    ...event,
+    event,
     simulate,
+    ...state,
   };
 }
