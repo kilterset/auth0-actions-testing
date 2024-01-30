@@ -1,12 +1,13 @@
 import { User } from "../user";
+import { Cache } from "./cache";
 
 /**
  * TODO: Incomplete interface
  */
 export interface PostLogin {
-  cache: Map<string, unknown>;
+  cache: Cache;
 
-  user: User & { setAppMetadata: (key: string, value: unknown) => void };
+  user: User & { setAppMetadata: (key: string, value: string) => void };
 
   /**
    * Modify the user's login access, such as by rejecting the login attempt.

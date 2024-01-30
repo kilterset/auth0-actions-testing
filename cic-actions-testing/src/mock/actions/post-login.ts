@@ -1,14 +1,19 @@
 import { api, events } from "..";
 import OktaCIC from "../../types";
+import { PostLoginOptions } from "../api";
 
 type Handler = (
   event: OktaCIC.Events.PostLogin,
   api: OktaCIC.API.PostLogin
 ) => void;
 
-export function postLogin(...params: Parameters<typeof events.postLogin>) {
-  const event = events.postLogin(...params);
-  const postLoginApi = api.postLogin({ user: event.user });
+export function postLogin({
+  cache,
+  ...attributes
+}: Parameters<typeof events.postLogin>[0] &
+  Omit<PostLoginOptions, "user"> = {}) {
+  const event = events.postLogin(attributes);
+  const postLoginApi = api.postLogin({ user: event.user, cache });
 
   async function simulate(handler: Handler) {
     return handler(event, postLoginApi);

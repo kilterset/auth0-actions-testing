@@ -1,15 +1,17 @@
 import OktaCIC from "../../types";
+import { cache as mockCache } from "./cache";
 import { user as mockUser } from "../user";
+
+export interface PostLoginOptions {
+  user?: OktaCIC.User;
+  cache?: Record<string, string>;
+}
 
 export function postLogin({
   user,
   cache,
-}: {
-  user?: OktaCIC.User;
-  cache?: Map<string, unknown>;
-} = {}): OktaCIC.API.PostLogin {
+}: PostLoginOptions = {}): OktaCIC.API.PostLogin {
   const userForApi = user ?? mockUser();
-  const cacheForApi = cache ?? new Map<string, unknown>();
 
   const api: OktaCIC.API.PostLogin = {
     access: {
@@ -20,7 +22,7 @@ export function postLogin({
       setCustomClaim: (name: string, value: unknown) => api,
     },
 
-    cache: cacheForApi,
+    cache: mockCache(cache),
 
     user: {
       ...userForApi,
