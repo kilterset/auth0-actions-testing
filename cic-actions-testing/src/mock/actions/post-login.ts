@@ -1,6 +1,5 @@
 import { api, events } from "..";
 import OktaCIC from "../../types";
-import { user as mockUser } from "../user";
 
 type Handler = (
   event: OktaCIC.Events.PostLogin,
