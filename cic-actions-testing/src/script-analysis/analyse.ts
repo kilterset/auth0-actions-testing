@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import * as ts from "typescript";
-import { SCANNERS } from "./";
+import { ANALYSERS } from "./";
 
 export async function analyseScript(
   path: string,
@@ -10,14 +10,14 @@ export async function analyseScript(
 
   const sourceFile = ts.createSourceFile(path, sourceString, target);
 
-  const results: Record<keyof typeof SCANNERS, string[]> = Object.keys(
-    SCANNERS
+  const results: Record<keyof typeof ANALYSERS, string[]> = Object.keys(
+    ANALYSERS
   ).reduce((collection, name) => {
-    collection[name as keyof typeof SCANNERS] = [];
+    collection[name as keyof typeof ANALYSERS] = [];
     return collection;
-  }, {} as Record<keyof typeof SCANNERS, string[]>);
+  }, {} as Record<keyof typeof ANALYSERS, string[]>);
 
-  const analysis = Object.entries(SCANNERS);
+  const analysis = Object.entries(ANALYSERS);
 
   visit(sourceFile);
 
@@ -26,7 +26,7 @@ export async function analyseScript(
       const result = visit(node);
 
       if (result) {
-        results[key as keyof typeof SCANNERS].push(result);
+        results[key as keyof typeof ANALYSERS].push(result);
       }
     }
 
