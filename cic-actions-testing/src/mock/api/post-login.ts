@@ -10,6 +10,7 @@ export interface PostLoginOptions {
 
 interface State {
   user: OktaCIC.User;
+  cache: OktaCIC.API.Cache;
   access: { denied: false } | { denied: true; reason: string };
   accessToken: {
     claims: Record<string, unknown>;
@@ -28,9 +29,12 @@ function notYetImplemented<T extends keyof OktaCIC.API.PostLogin>(
 }
 
 export function postLogin({ user, cache }: PostLoginOptions = {}) {
+  const apiCache = mockCache(cache);
+
   const state: State = {
     user: user ?? mockUser(),
     access: { denied: false },
+    cache: apiCache,
     accessToken: {
       claims: {},
       scopes: [],
@@ -70,7 +74,7 @@ export function postLogin({ user, cache }: PostLoginOptions = {}) {
 
     authentication: notYetImplemented("authentication"),
 
-    cache: mockCache(cache),
+    cache: apiCache,
 
     idToken: notYetImplemented("idToken"),
 
