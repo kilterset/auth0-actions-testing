@@ -5,7 +5,7 @@ import { PostLoginOptions } from "../api";
 type Handler = (
   event: OktaCIC.Events.PostLogin,
   api: OktaCIC.API.PostLogin
-) => void;
+) => Promise<void>;
 
 export function postLogin({
   cache,
@@ -13,13 +13,14 @@ export function postLogin({
 }: Parameters<typeof events.postLogin>[0] &
   Omit<PostLoginOptions, "user"> = {}) {
   const event = events.postLogin(attributes);
+
   const { implementation, state } = api.postLogin({
     user: event.user,
     cache,
   });
 
   async function simulate(handler: Handler) {
-    return handler(event, implementation);
+    await handler(event, implementation);
   }
 
   return {
