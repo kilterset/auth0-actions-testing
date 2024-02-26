@@ -4,14 +4,17 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "tsc --build --clean",
-    "build": "tsc --build --clean"
+    "test": "node --test dist/**/*.test.js",
+    "build": "tsc --build",
+    "build:watch": "tsc --watch",
+    "clean": "tsc --build --clean"
   },
   "author": "Pete Nicholls <pnicholls@kilterset.com>",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "@types/chance": "^1.1.6",
+    "@types/node": "^20.11.20",
     "chance": "^1.1.11",
     "fishery": "^2.2.2",
     "typescript": "^5.3.3"
