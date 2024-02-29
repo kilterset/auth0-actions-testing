@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "node --test dist/**/*.test.js",
+    "test": "node --test $(find dist -name *.test.js)",
     "build": "tsc --build",
     "build:watch": "tsc --watch",
     "clean": "tsc --build --clean"
