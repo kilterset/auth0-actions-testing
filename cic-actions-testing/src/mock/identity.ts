@@ -1,15 +1,25 @@
 import OktaCIC from "../types";
+import { chance } from "./chance";
 import { define } from "./define";
 
 export const identity = define<OktaCIC.Identity>(() => {
   return {
-    connection: "Username-Password-Authentication",
-    isSocial: false,
-    provider: "auth0",
-    userId: "5f7c8ec7c33c6c004bbafe82",
-    accessToken:
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gU21pdGgiLCJpYXQiOjE1MTYyMzkwMjJ9.Q_w2AVguPRU2KskCXwR7ZHl09TQXEntfEA8Jj2_Jyew",
+    connection: chance.pickone([
+      "Username-Password-Authentication",
+      "google-oauth2",
+      "windowslive",
+      "foo-onmicrosoft",
+      "auth10.com",
+    ]),
+    provider: chance.pickone([
+      "auth0",
+      "google-oauth2",
+      "windowslive",
+      "office365",
+      "adfs",
+    ]),
+    user_id: chance.hash({ length: 24 }),
     profileData: {},
-    user_id: "5f7c8ec7c33c6c004bbafe82",
+    isSocial: false,
   };
 });

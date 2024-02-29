@@ -73,8 +73,8 @@ test("User mock", async (t) => {
       const identity = identities[0];
 
       strictEqual(
-        user_id.split("|")[1],
-        identity.user_id,
+        user_id,
+        `${identity.provider}|${identity.user_id}`,
         "user_id does not match identity"
       );
     });
