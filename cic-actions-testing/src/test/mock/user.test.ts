@@ -1,5 +1,5 @@
 import test from "node:test";
-import { ok, strictEqual } from "node:assert";
+import { deepStrictEqual, ok, strictEqual } from "node:assert";
 import { user } from "../../mock/user";
 import { identity } from "../../mock/identity";
 
@@ -21,12 +21,39 @@ test("User mock", async (t) => {
     }
   });
 
-  await t.test("can have arbitrary attributes set", () => {
-    const { extra_field } = user({
+  await t.test("can have properties overridden", () => {
+    const overrides = {
+      user_id: "custom-id",
+      username: "hamlet",
+      name: "Hamlet",
+      given_name: "Ham",
+      family_name: "Let",
+      nickname: "hammy",
+      email: "hamlet@avon.info",
+      email_verified: true,
+      phone_number: "+1234567890",
+      phone_verified: true,
+      picture: "https://example/hamster.jpg",
+      app_metadata: {
+        custom: "data",
+      },
+      user_metadata: {
+        custom: "data",
+      },
+      created_at: "2021-01-01T00:00:00.000Z",
+      updated_at: "2021-01-01T00:00:00.000Z",
+      last_password_reset: undefined,
+      identities: [identity()],
       extra_field: "present",
-    });
+    };
 
-    strictEqual(extra_field, "present", "extra_field was not present");
+    const actual = user(overrides);
+
+    deepStrictEqual(
+      actual,
+      overrides,
+      "expected properties were not overridden"
+    );
   });
 
   await t.test("name attributes", async (t) => {
