@@ -8,8 +8,11 @@ import { session } from "../session";
 import { connection } from "../connection";
 import { organization } from "../organization";
 import { client } from "../client";
+import { chance } from "../chance";
 
-export const postLogin = define<OktaCIC.Events.PostLogin>(() => {
+export const postLogin = define<OktaCIC.Events.PostLogin>(({ params }) => {
+  const tenantId = params.tenant?.id || chance.n(chance.word, 2).join("-");
+
   return {
     transaction: transaction(),
     authentication: authentication(),
@@ -19,16 +22,14 @@ export const postLogin = define<OktaCIC.Events.PostLogin>(() => {
     connection: connection(),
     organization: organization(),
     resource_server: {
-      identifier: "dev-dieu8ws4.auth0.com/api/v2",
+      identifier: `${tenantId}.auth0.com/api/v2`,
     },
-    tenant: {
-      id: "dev-dieu8ws4",
-    },
+    tenant: { id: tenantId },
     session: session(),
     client: client(),
     request: request(),
     stats: {
-      logins_count: 62,
+      logins_count: chance.integer({ min: 0, max: 1_000 }),
     },
     user: user(),
     secrets: {},
