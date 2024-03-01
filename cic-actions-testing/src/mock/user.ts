@@ -106,7 +106,7 @@ export const user = define<OktaCIC.User, UserTransientParams>(
       created_at,
       updated_at,
       last_password_reset,
-      identities: [identity()],
+      identities,
     };
   }
 );

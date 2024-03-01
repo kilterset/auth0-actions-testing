@@ -2,8 +2,7 @@ export interface Identity {
   connection: string;
   isSocial: boolean;
   provider: string;
-  userId: string;
-  profileData: Record<string, unknown>;
+  profileData: Record<string, string>;
   user_id: string;
-  accessToken?: string;
+  [additionalProperties: string]: any;
 }
