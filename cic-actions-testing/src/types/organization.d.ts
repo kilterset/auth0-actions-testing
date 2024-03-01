@@ -1,8 +1,7 @@
 export interface Organization {
   display_name: string;
   id: string;
-  metadata: {
-    [key: string]: string;
-  };
+  metadata: Record<string, string>;
   name: string;
+  [addtionalProperties: string]: unknown;
 }
