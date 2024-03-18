@@ -43,4 +43,10 @@ test("PostLogin API", async (t) => {
       deepStrictEqual(state.accessToken.claims, { favourite_pet: "cat" });
     });
   });
+
+  await t.test("set user metadata", async (t) => {
+    const { implementation: api, state } = postLogin();
+    api.user.setUserMetadata("favourite_pet", "cat");
+    deepStrictEqual(state.user.user_metadata, { favourite_pet: "cat" });
+  })
 });
