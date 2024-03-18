@@ -89,6 +89,10 @@ export function postLogin({ user, cache }: PostLoginOptions = {}) {
         state.user.app_metadata ??= {};
         state.user.app_metadata[key] = value;
       },
+      setUserMetadata: (key, value) => {
+        state.user.user_metadata ??= {};
+        state.user.user_metadata[key] = value;
+      },
     },
 
     validation: notYetImplemented("validation"),

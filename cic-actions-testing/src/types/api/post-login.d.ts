@@ -89,7 +89,10 @@ export interface PostLogin {
     }): any;
   };
 
-  readonly user: { setAppMetadata: (key: string, value: string) => void };
+  readonly user: {
+    setAppMetadata: (key: string, value: string) => void;
+    setUserMetadata: (key: string, value: string) => void;
+  };
 
   readonly samlResponse: {
     setAttribute(
