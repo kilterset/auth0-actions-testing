@@ -1,20 +1,69 @@
+import { fail, ok } from "assert";
 import OktaCIC from "../types";
+import { chance } from "./chance";
 import { define } from "./define";
 import { riskAssessment } from "./risk-assessment";
 
-export const authentication = define<OktaCIC.Authentication>(() => {
+interface AuthenticationTransientParmas {
+  numMethods?: number;
+}
+
+export const authentication = define<
+  OktaCIC.Authentication,
+  AuthenticationTransientParmas
+>(({ params, transientParams }) => {
+  let methods = params.methods;
+
+  if (!Array.isArray(methods)) {
+    const numMethods =
+      typeof transientParams.numMethods === "number"
+        ? transientParams.numMethods
+        : chance.integer({ min: 1, max: 2 });
+
+    methods = Array.from({ length: numMethods }, () => authenticationMethod());
+  } else if (typeof transientParams.numMethods === "number") {
+    fail("Please specify only one of `methods` and `numMethods`");
+  }
+
   return {
-    methods: [
-      {
-        name: "mfa",
-        timestamp: "2018-11-13T20:20:39+00:00",
-        type: "email",
-      },
-      {
-        name: "passkey",
-        timestamp: "2018-11-13T20:22:13+00:00",
-      },
-    ],
+    methods,
     riskAssessment: riskAssessment(),
   };
 });
+
+export const authenticationMethod = define<OktaCIC.AuthenticationMethod>(
+  ({ params }) => {
+    const name =
+      params.name ||
+      chance.pickone([
+        "federated",
+        "pwd",
+        "passkey",
+        "sms",
+        "email",
+        "phone_number",
+        "mfa",
+      ]);
+
+    const extra =
+      name === "mfa"
+        ? {
+            type: chance.pickone([
+              "email",
+              "otp",
+              "push-notification",
+              "recovery-code",
+              "phone",
+              "webauthn-roaming",
+              "webauthn-platform",
+            ]),
+          }
+        : undefined;
+
+    return {
+      name,
+      timestamp: chance.date().toISOString(),
+      ...extra,
+    };
+  }
+);
