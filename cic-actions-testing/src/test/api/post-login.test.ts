@@ -39,14 +39,20 @@ test("PostLogin API", async (t) => {
 
     await t.test("can set custom claims", async (t) => {
       const { implementation: api, state } = postLogin();
-      api.accessToken.setCustomClaim("favourite_pet", "cat");
+      strictEqual(api.accessToken.setCustomClaim("favourite_pet", "cat"), api);
       deepStrictEqual(state.accessToken.claims, { favourite_pet: "cat" });
     });
   });
 
+  await t.test("set app metadata", async (t) => {
+    const { implementation: api, state } = postLogin();
+    strictEqual(api.user.setAppMetadata("handle", "@pat"), api);
+    deepStrictEqual(state.user.app_metadata, { handle: "@pat" });
+  });
+
   await t.test("set user metadata", async (t) => {
     const { implementation: api, state } = postLogin();
-    api.user.setUserMetadata("favourite_pet", "cat");
+    strictEqual(api.user.setUserMetadata("favourite_pet", "cat"), api);
     deepStrictEqual(state.user.user_metadata, { favourite_pet: "cat" });
-  })
+  });
 });

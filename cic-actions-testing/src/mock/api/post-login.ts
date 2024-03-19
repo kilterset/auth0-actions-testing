@@ -88,10 +88,12 @@ export function postLogin({ user, cache }: PostLoginOptions = {}) {
       setAppMetadata: (key, value) => {
         state.user.app_metadata ??= {};
         state.user.app_metadata[key] = value;
+        return api;
       },
       setUserMetadata: (key, value) => {
         state.user.user_metadata ??= {};
         state.user.user_metadata[key] = value;
+        return api;
       },
     },
 

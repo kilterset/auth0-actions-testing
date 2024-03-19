@@ -90,8 +90,8 @@ export interface PostLogin {
   };
 
   readonly user: {
-    setAppMetadata: (key: string, value: string) => void;
-    setUserMetadata: (key: string, value: string) => void;
+    setAppMetadata: (key: string, value: string) => PostLogin;
+    setUserMetadata: (key: string, value: string) => PostLogin;
   };
 
   readonly samlResponse: {
