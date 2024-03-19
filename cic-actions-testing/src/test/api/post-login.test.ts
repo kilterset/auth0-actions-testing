@@ -55,4 +55,10 @@ test("PostLogin API", async (t) => {
     strictEqual(api.user.setUserMetadata("favourite_pet", "cat"), api);
     deepStrictEqual(state.user.user_metadata, { favourite_pet: "cat" });
   });
+
+  await t.test("can set ID token claims", async (t) => {
+    const { implementation: api, state } = postLogin();
+    strictEqual(api.idToken.setCustomClaim("country", "NZ"), api);
+    deepStrictEqual(state.idToken.claims, { country: "NZ" });
+  });
 });

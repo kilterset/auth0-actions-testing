@@ -16,6 +16,9 @@ interface State {
     claims: Record<string, unknown>;
     scopes: string[];
   };
+  idToken: {
+    claims: Record<string, unknown>;
+  };
 }
 
 function notYetImplemented<T extends keyof OktaCIC.API.PostLogin>(
@@ -38,6 +41,9 @@ export function postLogin({ user, cache }: PostLoginOptions = {}) {
     accessToken: {
       claims: {},
       scopes: [],
+    },
+    idToken: {
+      claims: {},
     },
   };
 
@@ -76,7 +82,12 @@ export function postLogin({ user, cache }: PostLoginOptions = {}) {
 
     cache: apiCache,
 
-    idToken: notYetImplemented("idToken"),
+    idToken: {
+      setCustomClaim: (name, value) => {
+        state.idToken.claims[name] = value;
+        return api;
+      },
+    },
 
     multifactor: notYetImplemented("multifactor"),
 
