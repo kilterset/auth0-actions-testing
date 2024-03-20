@@ -8,7 +8,37 @@ export interface PostLoginOptions {
   cache?: Record<string, string>;
 }
 
-interface State {
+type SamlAttributeValue =
+  | string
+  | number
+  | boolean
+  | null
+  | Array<string | number | boolean>;
+
+interface SamlResponseState {
+  attributes: Record<string, SamlAttributeValue>;
+  createUpnClaim: boolean;
+  passthroughClaimsWithNoMapping: boolean;
+  mapUnknownClaimsAsIs: boolean;
+  mapIdentities: boolean;
+  signResponse: boolean;
+  lifetimeInSeconds: number;
+  nameIdentifierFormat: string;
+  nameIdentifierProbes: string[];
+  authnContextClassRef: string;
+  includeAttributeNameFormat: boolean;
+  typedAttributes: boolean;
+  audience: string;
+  recipient: string;
+  destination: string;
+  cert?: string;
+  encryptionCert?: string;
+  encryptionPublicKey?: string;
+  key?: string;
+  signingCert?: string;
+}
+
+export interface PostLoginState {
   user: OktaCIC.User;
   cache: OktaCIC.API.Cache;
   access: { denied: false } | { denied: true; reason: string };
@@ -19,6 +49,7 @@ interface State {
   idToken: {
     claims: Record<string, unknown>;
   };
+  samlResponse: SamlResponseState;
 }
 
 function notYetImplemented<T extends keyof OktaCIC.API.PostLogin>(
@@ -34,7 +65,7 @@ function notYetImplemented<T extends keyof OktaCIC.API.PostLogin>(
 export function postLogin({ user, cache }: PostLoginOptions = {}) {
   const apiCache = mockCache(cache);
 
-  const state: State = {
+  const state: PostLoginState = {
     user: user ?? mockUser(),
     access: { denied: false },
     cache: apiCache,
@@ -45,7 +76,62 @@ export function postLogin({ user, cache }: PostLoginOptions = {}) {
     idToken: {
       claims: {},
     },
+    samlResponse: {
+      // Custom attributes
+      attributes: {},
+
+      // Default literal values
+      createUpnClaim: true,
+      passthroughClaimsWithNoMapping: true,
+      mapUnknownClaimsAsIs: false,
+      mapIdentities: true,
+      signResponse: false,
+      includeAttributeNameFormat: true,
+      typedAttributes: true,
+      lifetimeInSeconds: 3600,
+
+      nameIdentifierFormat:
+        "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
+
+      nameIdentifierProbes: [
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+      ],
+
+      authnContextClassRef:
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified",
+
+      // Default dynamic values
+      audience: "default-audience",
+      recipient: "default-recipient",
+      destination: "default-destination",
+    },
   };
+
+  const samlResponse = {
+    setAttribute: (attribute: string, value: SamlAttributeValue) => {
+      state.samlResponse.attributes[attribute] = value;
+    },
+  } as OktaCIC.API.PostLogin["samlResponse"];
+
+  for (const property in state.samlResponse) {
+    if (state.samlResponse.hasOwnProperty(property)) {
+      const key = property as keyof SamlResponseState;
+
+      if (key === "attributes") {
+        continue;
+      }
+
+      const setter = `set${key[0].toUpperCase()}${key.slice(
+        1
+      )}` as keyof OktaCIC.API.PostLogin["samlResponse"];
+
+      samlResponse[setter] = (value: unknown) => {
+        state.samlResponse[key] = value as never;
+      };
+    }
+  }
 
   const api: OktaCIC.API.PostLogin = {
     access: {
@@ -93,7 +179,7 @@ export function postLogin({ user, cache }: PostLoginOptions = {}) {
 
     redirect: notYetImplemented("redirect"),
 
-    samlResponse: notYetImplemented("samlResponse"),
+    samlResponse,
 
     user: {
       setAppMetadata: (key, value) => {
