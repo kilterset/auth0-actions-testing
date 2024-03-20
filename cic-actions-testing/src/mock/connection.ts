@@ -1,11 +1,19 @@
 import OktaCIC from "../types";
+import { chance } from "./chance";
 import { define } from "./define";
 
-export const connection = define<OktaCIC.Connection>(() => {
+const EXAMPLES: { name: string; strategy: string }[] = [
+  { name: "Username-Password-Authentication", strategy: "auth0" },
+  { name: "google-oauth2", strategy: "google-oauth2" },
+  { name: "windowslive", strategy: "windowslive" },
+  { name: "foo-onmicrosoft", strategy: "office365" },
+  { name: "auth10.com", strategy: "adfs" },
+];
+
+export const connection = define<OktaCIC.Connection>(({ transientParams }) => {
   return {
-    id: "con_fpe5kj482KO1eOzQ",
-    name: "Username-Password-Authentication",
-    strategy: "auth0",
+    id: `con_${chance.string({ length: 24, alpha: true, numeric: true })}`,
     metadata: {},
+    ...chance.pickone(EXAMPLES),
   };
 });
