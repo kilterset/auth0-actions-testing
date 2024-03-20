@@ -80,6 +80,15 @@ test("PostLogin API", async (t) => {
     deepStrictEqual(state.multifactor.enabled, { provider: "duo", options });
   });
 
+  await t.test("can check whether a rule was executed", async (t) => {
+    const { implementation: api, state } = postLogin({
+      executedRules: ["rule-42"],
+    });
+
+    strictEqual(api.rules.wasExecuted("rule-42"), true);
+    strictEqual(api.rules.wasExecuted("some-not-executed-rule"), false);
+  });
+
   await t.test("samlResponse customisation", async (t) => {
     const { implementation: api, state } = postLogin();
 

@@ -6,6 +6,7 @@ import { user as mockUser } from "../user";
 export interface PostLoginOptions {
   user?: OktaCIC.User;
   cache?: Record<string, string>;
+  executedRules?: string[];
 }
 
 type SamlAttributeValue =
@@ -70,8 +71,13 @@ function notYetImplemented<T extends keyof OktaCIC.API.PostLogin>(
   });
 }
 
-export function postLogin({ user, cache }: PostLoginOptions = {}) {
+export function postLogin({
+  user,
+  cache,
+  executedRules: optionallyExecutedRules,
+}: PostLoginOptions = {}) {
   const apiCache = mockCache(cache);
+  const executedRules = optionallyExecutedRules ?? [];
 
   const state: PostLoginState = {
     user: user ?? mockUser(),
@@ -194,6 +200,12 @@ export function postLogin({ user, cache }: PostLoginOptions = {}) {
     },
 
     redirect: notYetImplemented("redirect"),
+
+    rules: {
+      wasExecuted: (ruleId) => {
+        return executedRules.includes(ruleId);
+      },
+    },
 
     samlResponse,
 
