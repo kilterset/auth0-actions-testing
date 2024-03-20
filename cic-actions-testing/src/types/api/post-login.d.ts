@@ -62,6 +62,10 @@ export interface PostLogin {
     enable(provider: string, options?: MultifactorEnableOptions): PostLogin;
   };
 
+  readonly rules: {
+    wasExecuted(ruleId: string): boolean;
+  };
+
   readonly redirect: {
     encodeToken(options: {
       expiresInSeconds?: number;
