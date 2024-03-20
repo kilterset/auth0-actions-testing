@@ -1,5 +1,5 @@
 import { mock } from "node:test";
-import OktaCIC from "../../types";
+import OktaCIC, { MultifactorEnableOptions } from "../../types";
 import { cache as mockCache } from "./cache";
 import { user as mockUser } from "../user";
 
@@ -49,6 +49,14 @@ export interface PostLoginState {
   idToken: {
     claims: Record<string, unknown>;
   };
+  multifactor: {
+    enabled:
+      | false
+      | {
+          provider: string;
+          options?: MultifactorEnableOptions;
+        };
+  };
   samlResponse: SamlResponseState;
 }
 
@@ -75,6 +83,9 @@ export function postLogin({ user, cache }: PostLoginOptions = {}) {
     },
     idToken: {
       claims: {},
+    },
+    multifactor: {
+      enabled: false,
     },
     samlResponse: {
       // Custom attributes
@@ -175,7 +186,12 @@ export function postLogin({ user, cache }: PostLoginOptions = {}) {
       },
     },
 
-    multifactor: notYetImplemented("multifactor"),
+    multifactor: {
+      enable: (provider, options) => {
+        state.multifactor.enabled = { provider, options };
+        return api;
+      },
+    },
 
     redirect: notYetImplemented("redirect"),
 

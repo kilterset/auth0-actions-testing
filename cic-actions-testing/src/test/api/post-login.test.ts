@@ -62,6 +62,24 @@ test("PostLogin API", async (t) => {
     deepStrictEqual(state.idToken.claims, { country: "NZ" });
   });
 
+  await t.test("enabling multifactor", async (t) => {
+    const { implementation: api, state } = postLogin();
+    strictEqual(state.multifactor.enabled, false);
+
+    const options = {
+      allowRememberBrowser: true,
+      providerOptions: {
+        host: "custom-host",
+        ikey: "custom-ikey",
+        skey: "custom-skey",
+        username: "custom-username",
+      },
+    };
+
+    strictEqual(api.multifactor.enable("duo", options), api);
+    deepStrictEqual(state.multifactor.enabled, { provider: "duo", options });
+  });
+
   await t.test("samlResponse customisation", async (t) => {
     const { implementation: api, state } = postLogin();
 
