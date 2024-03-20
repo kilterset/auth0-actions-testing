@@ -11,6 +11,11 @@ interface Factor {
   [additionalProperties: string]: any;
 }
 
+export interface MultifactorEnableOptions {
+  allowRememberBrowser?: boolean;
+  providerOptions?: Record<string, unknown>;
+}
+
 /**
  * TODO: Incomplete interface
  */
@@ -54,13 +59,7 @@ export interface PostLogin {
   };
 
   readonly multifactor: {
-    enable(
-      provider: string,
-      options?: {
-        allowRememberBrowser?: boolean;
-        providerOptions?: Record<string, unknown>;
-      }
-    ): PostLogin;
+    enable(provider: string, options?: MultifactorEnableOptions): PostLogin;
   };
 
   readonly redirect: {
