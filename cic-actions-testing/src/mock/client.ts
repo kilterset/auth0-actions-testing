@@ -4,7 +4,7 @@ import { define } from "./define";
 
 export const client = define<OktaCIC.Client>(() => {
   return {
-    client_id: chance.string({ length: 32, alpha: true, numeric: true }),
+    client_id: chance.auth0().clientId(),
     name: chance.word({ syllables: 3 }),
     metadata: {},
   };
