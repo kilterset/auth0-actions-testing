@@ -1,36 +1,39 @@
 import OktaCIC from "../types";
+import { chance } from "./chance";
+import { connection } from "./connection";
 import { define } from "./define";
 
 export const request = define<OktaCIC.Request>(() => {
+  const { name: connectionName } = connection();
+
   return {
-    ip: "13.33.86.47",
-    asn: "AS13335",
-    method: "GET",
+    ip: chance.ip(),
+    asn: chance.pickone([chance.asn(), undefined]),
+    method: chance.pickone(["GET", "POST"]),
     query: {
-      protocol: "oauth2",
-      client_id: "gmOWNgklfRm4tyl5YYnl3JDSJy19h1bR",
-      response_type: "code",
-      connection: "Username-Password-Authentication",
-      prompt: "login",
-      scope: "openid profile",
-      redirect_uri:
-        "https://example/tester/callback?connection=Username-Password-Authentication",
+      protocol: chance.auth0().protocol(),
+      connection: connectionName,
+      client_id: chance.auth0().clientId(),
+      response_type: chance.oAuth().responseType(),
+      prompt: chance.pickone(["login", undefined]),
+      scope: chance.oAuth().scopes().join(" "),
+      redirect_uri: chance.url({ path: "redirect" }),
     },
     body: {},
     geoip: {
-      cityName: "Bellevue",
-      continentCode: "NA",
-      countryCode3: "USA",
-      countryCode: "US",
-      countryName: "United States of America",
-      latitude: 47.61793,
-      longitude: -122.19584,
-      subdivisionCode: "WA",
-      subdivisionName: "Washington",
-      timeZone: "America/Los_Angeles",
+      cityName: chance.city(),
+      continentCode: chance.string({ length: 2, alpha: true }),
+      countryCode3: chance.string({ length: 3, alpha: true }),
+      countryCode: chance.country(),
+      countryName: chance.country({ full: true }),
+      latitude: chance.latitude(),
+      longitude: chance.longitude(),
+      subdivisionCode: chance.state(),
+      subdivisionName: chance.state({ full: true }),
+      timeZone: chance.pickone(chance.timezone().utc),
     },
-    hostname: "dev-dieu8ws4.auth0.com",
-    language: "en",
-    user_agent: "curl/7.64.1",
+    hostname: chance.auth0().domain(),
+    language: chance.locale(),
+    user_agent: chance.useragent(),
   };
 });
