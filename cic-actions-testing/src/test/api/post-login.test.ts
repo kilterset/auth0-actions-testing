@@ -1,5 +1,5 @@
 import test from "node:test";
-import { strictEqual, deepStrictEqual } from "node:assert";
+import { strictEqual, deepStrictEqual, throws } from "node:assert";
 import { postLogin } from "../../mock/api";
 
 test("PostLogin API", async (t) => {
@@ -355,6 +355,44 @@ test("PostLogin API", async (t) => {
       });
     });
 
-    // Any userMetadata set in the same Action as setPrimaryUser is discarded and will be lost. Subsequent Actions within the same transaction will retain userMetadata on the new primary user.
+    await t.test(
+      "recordMethod throws an error if incorrectly used during onExecutePostLogin",
+      async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        // Note: In practice, an error is not thrown, but this seems like a
+        // better guard rail for test writers.
+        throws(
+          () => api.authentication.recordMethod("provider-url"),
+          /onContinuePostLogin/
+        );
+      }
+    );
+
+    await t.test("setPrimaryUser", async (t) => {
+      await t.test("can change the primary user ID", async (t) => {
+        const { implementation: api, state } = postLogin();
+        const originalUserId = state.user.user_id;
+        strictEqual(state.primaryUserId, originalUserId);
+
+        strictEqual(
+          api.authentication.setPrimaryUser("new-primary-user-id"),
+          undefined
+        );
+
+        strictEqual(state.primaryUserId, "new-primary-user-id");
+        strictEqual(state.user.user_id, originalUserId);
+      });
+
+      await t.test("can only be called once per transaction", async (t) => {
+        const { implementation: api, state } = postLogin();
+        api.authentication.setPrimaryUser("new-primary-user-id");
+
+        throws(
+          () => api.authentication.setPrimaryUser("new-primary-user-id"),
+          /once/
+        );
+      });
+    });
   });
 });

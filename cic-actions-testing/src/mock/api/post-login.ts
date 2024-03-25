@@ -46,6 +46,7 @@ interface FactorList {
 
 export interface PostLoginState {
   user: OktaCIC.User;
+  primaryUserId: string;
   cache: OktaCIC.API.Cache;
   access: { denied: false } | { denied: true; reason: string };
   accessToken: {
@@ -87,9 +88,13 @@ export function postLogin({
 }: PostLoginOptions = {}) {
   const apiCache = mockCache(cache);
   const executedRules = optionallyExecutedRules ?? [];
+  const userValue = user ?? mockUser();
+
+  let numCallsToSetPrimaryUser = 0;
 
   const state: PostLoginState = {
-    user: user ?? mockUser(),
+    user: userValue,
+    primaryUserId: userValue.user_id,
     access: { denied: false },
     accessToken: {
       claims: {},
@@ -224,10 +229,20 @@ export function postLogin({
         };
       },
       setPrimaryUser: (primaryUserId) => {
-        throw new Error("Not yet implemented");
+        numCallsToSetPrimaryUser++;
+
+        if (numCallsToSetPrimaryUser > 1) {
+          throw new Error(
+            "`authentication.setPrimaryUser` can only be set once per transaction"
+          );
+        }
+
+        state.primaryUserId = primaryUserId;
       },
       recordMethod: (providerUrl) => {
-        throw new Error("Not yet implemented");
+        throw new Error(
+          "`authentication.recordMethod` should only be used from within onContinuePostLogin"
+        );
       },
     },
 
