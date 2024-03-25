@@ -1,20 +1,17 @@
 export interface Request {
   ip: string;
-  asn: string;
+  asn?: string;
+
+  /** The HTTP method used for the request */
   method: string;
-  query: {
-    protocol: string;
-    client_id: string;
-    response_type: string;
-    connection: string;
-    prompt: string;
-    scope: string;
-    redirect_uri: string;
-  };
-  body: {
-    [key: string]: string;
-  };
-  geoip: {
+
+  /** The query string parameters sent to the the authorization request. */
+  query: Record<string, unknown>;
+
+  /** The body of the POST request. This data will only be available during refresh token and Client Credential Exchange flows and Post Login Action. */
+  body: Record<string, unknown>;
+
+  geoip: Partial<{
     cityName: string;
     continentCode: string;
     countryCode3: string;
@@ -25,8 +22,14 @@ export interface Request {
     subdivisionCode: string;
     subdivisionName: string;
     timeZone: string;
-  };
-  hostname: string;
-  language: string;
-  user_agent: string;
+    [additionalProperties: string]: unknown;
+  }>;
+
+  /** The hostname that is being used for the authentication flow. */
+  hostname?: string;
+
+  /** The language requested by the browser. */
+  language?: string;
+
+  user_agent?: string;
 }
