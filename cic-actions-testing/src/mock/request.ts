@@ -30,7 +30,7 @@ export const request = define<OktaCIC.Request>(() => {
       longitude: chance.longitude(),
       subdivisionCode: chance.state(),
       subdivisionName: chance.state({ full: true }),
-      timeZone: chance.pickone(chance.timezone().utc),
+      timeZone: chance.tzIdentifier(),
     },
     hostname: chance.auth0().domain(),
     language: chance.locale(),
