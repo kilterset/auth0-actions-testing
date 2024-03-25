@@ -218,4 +218,143 @@ test("PostLogin API", async (t) => {
       );
     });
   });
+
+  await t.test("authentication", async (t) => {
+    await t.test("challenge", async (t) => {
+      await t.test("is false by default", async (t) => {
+        const { implementation: api, state } = postLogin();
+        strictEqual(state.authentication.challenge, false);
+      });
+
+      await t.test("can be set with a default", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        strictEqual(
+          api.authentication.challengeWith({ type: "otp" }),
+          undefined
+        );
+
+        deepStrictEqual(state.authentication.challenge, {
+          default: { type: "otp" },
+          allOptions: [{ type: "otp" }],
+        });
+      });
+
+      await t.test("can be set with a default and alternatives", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        strictEqual(
+          api.authentication.challengeWith(
+            {
+              type: "phone",
+              options: { preferredMethod: "voice" },
+            },
+            {
+              additionalFactors: [
+                { type: "email" },
+                { type: "webauthn-roaming" },
+              ],
+            }
+          ),
+          undefined
+        );
+
+        deepStrictEqual(state.authentication.challenge, {
+          default: {
+            type: "phone",
+            options: { preferredMethod: "voice" },
+          },
+          allOptions: [
+            {
+              type: "phone",
+              options: { preferredMethod: "voice" },
+            },
+            { type: "email" },
+            { type: "webauthn-roaming" },
+          ],
+        });
+      });
+
+      await t.test("can be set with options and no default", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        const factors = [{ type: "email" }, { type: "webauthn-roaming" }];
+
+        strictEqual(api.authentication.challengeWithAny(factors), undefined);
+
+        deepStrictEqual(state.authentication.challenge, {
+          default: undefined,
+          allOptions: factors,
+        });
+      });
+    });
+
+    await t.test("enroll", async (t) => {
+      await t.test("is false by default", async (t) => {
+        const { implementation: api, state } = postLogin();
+        strictEqual(state.authentication.enrollment, false);
+      });
+
+      await t.test("can be set with a default", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        strictEqual(api.authentication.enrollWith({ type: "otp" }), undefined);
+
+        deepStrictEqual(state.authentication.enrollment, {
+          default: { type: "otp" },
+          allOptions: [{ type: "otp" }],
+        });
+      });
+
+      await t.test("can be set with a default and alternatives", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        strictEqual(
+          api.authentication.enrollWith(
+            {
+              type: "phone",
+              options: { preferredMethod: "voice" },
+            },
+            {
+              additionalFactors: [
+                { type: "email" },
+                { type: "webauthn-roaming" },
+              ],
+            }
+          ),
+          undefined
+        );
+
+        deepStrictEqual(state.authentication.enrollment, {
+          default: {
+            type: "phone",
+            options: { preferredMethod: "voice" },
+          },
+          allOptions: [
+            {
+              type: "phone",
+              options: { preferredMethod: "voice" },
+            },
+            { type: "email" },
+            { type: "webauthn-roaming" },
+          ],
+        });
+      });
+
+      await t.test("can be set with options and no default", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        const factors = [{ type: "email" }, { type: "webauthn-roaming" }];
+
+        strictEqual(api.authentication.enrollWithAny(factors), undefined);
+
+        deepStrictEqual(state.authentication.enrollment, {
+          default: undefined,
+          allOptions: factors,
+        });
+      });
+    });
+
+    // Any userMetadata set in the same Action as setPrimaryUser is discarded and will be lost. Subsequent Actions within the same transaction will retain userMetadata on the new primary user.
+  });
 });

@@ -1,15 +1,29 @@
 import { User } from "../user";
 import { Cache } from "./cache";
 
-interface Factor {
+interface SimpleFactor {
   /** A type of authentication factor such as `push-notification`, `phone`, `email`, `otp`, `webauthn-roaming` and `webauthn-platform`. */
-  type: string;
+  type:
+    | "otp"
+    | "recovery-code"
+    | "email"
+    | "webauthn-platform"
+    | "webauthn-roaming"
+    | "push-notification"
+    | string;
+
   /** Additional options for configuring a factor of a given type. */
   options?: {
     [property: string]: any;
   };
-  [additionalProperties: string]: any;
 }
+
+type PhoneFactor = {
+  type: "phone";
+  options?: { preferredMethod?: "voice" | "sms" | "both" };
+};
+
+type Factor = SimpleFactor | PhoneFactor;
 
 export interface MultifactorEnableOptions {
   allowRememberBrowser?: boolean;
@@ -48,8 +62,13 @@ export interface PostLogin {
       options?: { additionalFactors?: Factor[] }
     ): void;
     challengeWithAny(factors: Factor[]): void;
-    recordMethod(provider_url: string): PostLogin;
-    setPrimaryUser(primary_user_id: string): void;
+    enrollWith(
+      factor: Factor,
+      options?: { additionalFactors?: Factor[] }
+    ): void;
+    enrollWithAny(factors: Factor[]): void;
+    recordMethod(providerUrl: string): PostLogin;
+    setPrimaryUser(primaryUserId: string): void;
   };
 
   readonly cache: Cache;

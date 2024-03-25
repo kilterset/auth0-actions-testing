@@ -1,5 +1,5 @@
 import { mock } from "node:test";
-import OktaCIC, { MultifactorEnableOptions } from "../../types";
+import OktaCIC, { Factor, MultifactorEnableOptions } from "../../types";
 import { cache as mockCache } from "./cache";
 import { user as mockUser } from "../user";
 
@@ -39,6 +39,11 @@ interface SamlResponseState {
   signingCert?: string;
 }
 
+interface FactorList {
+  allOptions: Factor[];
+  default: Factor | undefined;
+}
+
 export interface PostLoginState {
   user: OktaCIC.User;
   cache: OktaCIC.API.Cache;
@@ -46,6 +51,10 @@ export interface PostLoginState {
   accessToken: {
     claims: Record<string, unknown>;
     scopes: string[];
+  };
+  authentication: {
+    challenge: FactorList | false;
+    enrollment: FactorList | false;
   };
   idToken: {
     claims: Record<string, unknown>;
@@ -82,11 +91,15 @@ export function postLogin({
   const state: PostLoginState = {
     user: user ?? mockUser(),
     access: { denied: false },
-    cache: apiCache,
     accessToken: {
       claims: {},
       scopes: [],
     },
+    authentication: {
+      challenge: false,
+      enrollment: false,
+    },
+    cache: apiCache,
     idToken: {
       claims: {},
     },
@@ -181,7 +194,42 @@ export function postLogin({
       },
     },
 
-    authentication: notYetImplemented("authentication"),
+    authentication: {
+      challengeWith: (factor, options) => {
+        const additionalFactors = options?.additionalFactors ?? [];
+
+        state.authentication.challenge = {
+          allOptions: [factor, ...additionalFactors],
+          default: factor,
+        };
+      },
+      challengeWithAny(factors) {
+        state.authentication.challenge = {
+          allOptions: factors,
+          default: undefined,
+        };
+      },
+      enrollWith(factor, options) {
+        const additionalFactors = options?.additionalFactors ?? [];
+
+        state.authentication.enrollment = {
+          allOptions: [factor, ...additionalFactors],
+          default: factor,
+        };
+      },
+      enrollWithAny(factors) {
+        state.authentication.enrollment = {
+          allOptions: factors,
+          default: undefined,
+        };
+      },
+      setPrimaryUser: (primaryUserId) => {
+        throw new Error("Not yet implemented");
+      },
+      recordMethod: (providerUrl) => {
+        throw new Error("Not yet implemented");
+      },
+    },
 
     cache: apiCache,
 
