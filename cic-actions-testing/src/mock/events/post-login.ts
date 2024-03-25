@@ -1,5 +1,5 @@
 import { define } from "../define";
-import OktaCIC from "../../types";
+import OktaCIC, { Connection } from "../../types";
 import { user } from "../user";
 import { request } from "../request";
 import { authentication } from "../authentication";
@@ -9,29 +9,60 @@ import { connection } from "../connection";
 import { organization } from "../organization";
 import { client } from "../client";
 import { chance } from "../chance";
+import { identity } from "../identity";
 
 export const postLogin = define<OktaCIC.Events.PostLogin>(({ params }) => {
   const tenantId = params.tenant?.id || chance.n(chance.word, 2).join("-");
+  const hostname = `${tenantId}.auth0.com`;
+
+  const connectionValue = params.connection
+    ? (params.connection as Connection)
+    : connection();
+
+  const identities = params.user?.identities || [];
+
+  identities.splice(
+    0,
+    1,
+    identity({
+      connection: connectionValue.name,
+      provider: connectionValue.strategy,
+      ...(identities[0] || {}),
+    })
+  );
+
+  const userValue = user({ ...params.user, identities });
+
+  const requestValue = request({
+    hostname,
+    ...params.request,
+    query: {
+      connection: connectionValue.name,
+      ...params.request?.query,
+    },
+  });
+
+  const transactionValue = transaction();
 
   return {
-    transaction: transaction(),
+    transaction: transactionValue,
     authentication: authentication(),
     authorization: {
       roles: [],
     },
-    connection: connection(),
+    connection: connectionValue,
     organization: organization(),
     resource_server: {
-      identifier: `${tenantId}.auth0.com/api/v2`,
+      identifier: `https://${hostname}/userinfo`,
     },
     tenant: { id: tenantId },
     session: session(),
     client: client(),
-    request: request(),
+    request: requestValue,
     stats: {
       logins_count: chance.integer({ min: 0, max: 1_000 }),
     },
-    user: user(),
+    user: userValue,
     secrets: {},
   };
 });
