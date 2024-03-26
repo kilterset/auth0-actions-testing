@@ -1,5 +1,5 @@
 import { mock } from "node:test";
-import OktaCIC, { MultifactorEnableOptions } from "../../types";
+import OktaCIC, { Factor, MultifactorEnableOptions } from "../../types";
 import { cache as mockCache } from "./cache";
 import { user as mockUser } from "../user";
 
@@ -39,13 +39,23 @@ interface SamlResponseState {
   signingCert?: string;
 }
 
+interface FactorList {
+  allOptions: Factor[];
+  default: Factor | undefined;
+}
+
 export interface PostLoginState {
   user: OktaCIC.User;
+  primaryUserId: string;
   cache: OktaCIC.API.Cache;
   access: { denied: false } | { denied: true; reason: string };
   accessToken: {
     claims: Record<string, unknown>;
     scopes: string[];
+  };
+  authentication: {
+    challenge: FactorList | false;
+    enrollment: FactorList | false;
   };
   idToken: {
     claims: Record<string, unknown>;
@@ -78,15 +88,23 @@ export function postLogin({
 }: PostLoginOptions = {}) {
   const apiCache = mockCache(cache);
   const executedRules = optionallyExecutedRules ?? [];
+  const userValue = user ?? mockUser();
+
+  let numCallsToSetPrimaryUser = 0;
 
   const state: PostLoginState = {
-    user: user ?? mockUser(),
+    user: userValue,
+    primaryUserId: userValue.user_id,
     access: { denied: false },
-    cache: apiCache,
     accessToken: {
       claims: {},
       scopes: [],
     },
+    authentication: {
+      challenge: false,
+      enrollment: false,
+    },
+    cache: apiCache,
     idToken: {
       claims: {},
     },
@@ -181,7 +199,52 @@ export function postLogin({
       },
     },
 
-    authentication: notYetImplemented("authentication"),
+    authentication: {
+      challengeWith: (factor, options) => {
+        const additionalFactors = options?.additionalFactors ?? [];
+
+        state.authentication.challenge = {
+          allOptions: [factor, ...additionalFactors],
+          default: factor,
+        };
+      },
+      challengeWithAny(factors) {
+        state.authentication.challenge = {
+          allOptions: factors,
+          default: undefined,
+        };
+      },
+      enrollWith(factor, options) {
+        const additionalFactors = options?.additionalFactors ?? [];
+
+        state.authentication.enrollment = {
+          allOptions: [factor, ...additionalFactors],
+          default: factor,
+        };
+      },
+      enrollWithAny(factors) {
+        state.authentication.enrollment = {
+          allOptions: factors,
+          default: undefined,
+        };
+      },
+      setPrimaryUser: (primaryUserId) => {
+        numCallsToSetPrimaryUser++;
+
+        if (numCallsToSetPrimaryUser > 1) {
+          throw new Error(
+            "`authentication.setPrimaryUser` can only be set once per transaction"
+          );
+        }
+
+        state.primaryUserId = primaryUserId;
+      },
+      recordMethod: (providerUrl) => {
+        throw new Error(
+          "`authentication.recordMethod` should only be used from within onContinuePostLogin"
+        );
+      },
+    },
 
     cache: apiCache,
 

@@ -1,5 +1,5 @@
 import test from "node:test";
-import { strictEqual, deepStrictEqual } from "node:assert";
+import { strictEqual, deepStrictEqual, throws } from "node:assert";
 import { postLogin } from "../../mock/api";
 
 test("PostLogin API", async (t) => {
@@ -216,6 +216,183 @@ test("PostLogin API", async (t) => {
         state.samlResponse.authnContextClassRef,
         "custom-authn-context-class-ref"
       );
+    });
+  });
+
+  await t.test("authentication", async (t) => {
+    await t.test("challenge", async (t) => {
+      await t.test("is false by default", async (t) => {
+        const { implementation: api, state } = postLogin();
+        strictEqual(state.authentication.challenge, false);
+      });
+
+      await t.test("can be set with a default", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        strictEqual(
+          api.authentication.challengeWith({ type: "otp" }),
+          undefined
+        );
+
+        deepStrictEqual(state.authentication.challenge, {
+          default: { type: "otp" },
+          allOptions: [{ type: "otp" }],
+        });
+      });
+
+      await t.test("can be set with a default and alternatives", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        strictEqual(
+          api.authentication.challengeWith(
+            {
+              type: "phone",
+              options: { preferredMethod: "voice" },
+            },
+            {
+              additionalFactors: [
+                { type: "email" },
+                { type: "webauthn-roaming" },
+              ],
+            }
+          ),
+          undefined
+        );
+
+        deepStrictEqual(state.authentication.challenge, {
+          default: {
+            type: "phone",
+            options: { preferredMethod: "voice" },
+          },
+          allOptions: [
+            {
+              type: "phone",
+              options: { preferredMethod: "voice" },
+            },
+            { type: "email" },
+            { type: "webauthn-roaming" },
+          ],
+        });
+      });
+
+      await t.test("can be set with options and no default", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        const factors = [{ type: "email" }, { type: "webauthn-roaming" }];
+
+        strictEqual(api.authentication.challengeWithAny(factors), undefined);
+
+        deepStrictEqual(state.authentication.challenge, {
+          default: undefined,
+          allOptions: factors,
+        });
+      });
+    });
+
+    await t.test("enroll", async (t) => {
+      await t.test("is false by default", async (t) => {
+        const { implementation: api, state } = postLogin();
+        strictEqual(state.authentication.enrollment, false);
+      });
+
+      await t.test("can be set with a default", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        strictEqual(api.authentication.enrollWith({ type: "otp" }), undefined);
+
+        deepStrictEqual(state.authentication.enrollment, {
+          default: { type: "otp" },
+          allOptions: [{ type: "otp" }],
+        });
+      });
+
+      await t.test("can be set with a default and alternatives", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        strictEqual(
+          api.authentication.enrollWith(
+            {
+              type: "phone",
+              options: { preferredMethod: "voice" },
+            },
+            {
+              additionalFactors: [
+                { type: "email" },
+                { type: "webauthn-roaming" },
+              ],
+            }
+          ),
+          undefined
+        );
+
+        deepStrictEqual(state.authentication.enrollment, {
+          default: {
+            type: "phone",
+            options: { preferredMethod: "voice" },
+          },
+          allOptions: [
+            {
+              type: "phone",
+              options: { preferredMethod: "voice" },
+            },
+            { type: "email" },
+            { type: "webauthn-roaming" },
+          ],
+        });
+      });
+
+      await t.test("can be set with options and no default", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        const factors = [{ type: "email" }, { type: "webauthn-roaming" }];
+
+        strictEqual(api.authentication.enrollWithAny(factors), undefined);
+
+        deepStrictEqual(state.authentication.enrollment, {
+          default: undefined,
+          allOptions: factors,
+        });
+      });
+    });
+
+    await t.test(
+      "recordMethod throws an error if incorrectly used during onExecutePostLogin",
+      async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        // Note: In practice, an error is not thrown, but this seems like a
+        // better guard rail for test writers.
+        throws(
+          () => api.authentication.recordMethod("provider-url"),
+          /onContinuePostLogin/
+        );
+      }
+    );
+
+    await t.test("setPrimaryUser", async (t) => {
+      await t.test("can change the primary user ID", async (t) => {
+        const { implementation: api, state } = postLogin();
+        const originalUserId = state.user.user_id;
+        strictEqual(state.primaryUserId, originalUserId);
+
+        strictEqual(
+          api.authentication.setPrimaryUser("new-primary-user-id"),
+          undefined
+        );
+
+        strictEqual(state.primaryUserId, "new-primary-user-id");
+        strictEqual(state.user.user_id, originalUserId);
+      });
+
+      await t.test("can only be called once per transaction", async (t) => {
+        const { implementation: api, state } = postLogin();
+        api.authentication.setPrimaryUser("new-primary-user-id");
+
+        throws(
+          () => api.authentication.setPrimaryUser("new-primary-user-id"),
+          /once/
+        );
+      });
     });
   });
 });
