@@ -395,4 +395,17 @@ test("PostLogin API", async (t) => {
       });
     });
   });
+
+  await t.test("validation error", async (t) => {
+    const { implementation: api, state } = postLogin();
+
+    strictEqual(state.validation.error, null);
+
+    strictEqual(api.validation.error("E_KABOOM", "Something went wrong"), api);
+
+    deepStrictEqual(state.validation.error, {
+      code: "E_KABOOM",
+      message: "Something went wrong",
+    });
+  });
 });

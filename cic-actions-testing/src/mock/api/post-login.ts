@@ -69,6 +69,9 @@ export interface PostLoginState {
         };
   };
   samlResponse: SamlResponseState;
+  validation: {
+    error: { code: string; message: string } | null;
+  };
 }
 
 function notYetImplemented<T extends keyof OktaCIC.API.PostLogin>(
@@ -141,6 +144,9 @@ export function postLogin({
       audience: "default-audience",
       recipient: "default-recipient",
       destination: "default-destination",
+    },
+    validation: {
+      error: null,
     },
   };
 
@@ -285,7 +291,12 @@ export function postLogin({
       },
     },
 
-    validation: notYetImplemented("validation"),
+    validation: {
+      error: (code, message) => {
+        state.validation.error = { code, message };
+        return api;
+      },
+    },
   };
 
   return {
