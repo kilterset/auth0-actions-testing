@@ -1,11 +1,15 @@
 import OktaCIC, { Factor, MultifactorEnableOptions } from "../../types";
+import { createHmac } from "node:crypto";
 import { cache as mockCache } from "./cache";
 import { user as mockUser } from "../user";
+import { request as mockRequest } from "../request";
 
 export interface PostLoginOptions {
   user?: OktaCIC.User;
   cache?: Record<string, string>;
   executedRules?: string[];
+  now?: ConstructorParameters<typeof Date>[0];
+  request?: OktaCIC.Request;
 }
 
 type SamlAttributeValue =
@@ -76,12 +80,17 @@ export interface PostLoginState {
 
 export function postLogin({
   user,
+  request,
   cache,
   executedRules: optionallyExecutedRules,
+  now: nowValue,
 }: PostLoginOptions = {}) {
   const apiCache = mockCache(cache);
   const executedRules = optionallyExecutedRules ?? [];
   const userValue = user ?? mockUser();
+  const requestValue = request ?? mockRequest();
+
+  const now = new Date(nowValue || Date.now());
 
   let numCallsToSetPrimaryUser = 0;
 
@@ -260,8 +269,34 @@ export function postLogin({
     },
 
     redirect: {
-      encodeToken: () => {
-        throw new Error("`redirect.encodeToken` is not implemented");
+      encodeToken: ({ expiresInSeconds, payload, secret }) => {
+        expiresInSeconds = expiresInSeconds ?? 900;
+
+        const header = {
+          alg: "HS256",
+          typ: "JWT",
+        };
+
+        const claims = {
+          iss: requestValue.hostname,
+          iat: Math.floor(now.getTime() / 1000),
+          exp: Math.floor((now.getTime() + expiresInSeconds * 1000) / 1000),
+          sub: userValue.user_id,
+          ip: requestValue.ip,
+          ...payload,
+        };
+
+        const body = [header, claims]
+          .map((part) =>
+            Buffer.from(JSON.stringify(part)).toString("base64url")
+          )
+          .join(".");
+
+        const signature = createHmac("sha256", secret)
+          .update(body)
+          .digest("base64url");
+
+        return `${body}.${signature}`;
       },
       sendUserTo: (urlString, options) => {
         const url = new URL(urlString);
