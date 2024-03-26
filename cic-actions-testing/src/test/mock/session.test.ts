@@ -7,14 +7,15 @@ test("session mock", async (t) => {
     const { id, device } = session();
 
     ok(typeof id === "string" && id, "no id");
-    ok(device?.last_asn, "no last_asn");
-    match(device?.last_asn, /^[0-9]+$/, "unexpected last_asn format");
-    ok(device?.last_ip, "no ip_address");
-    match(
-      device?.last_ip,
-      /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$/,
-      "unexpected last_ip format"
-    );
+    ok(device, "no device");
+
+    const asn = device?.last_asn || device?.initial_asn;
+    ok(asn, "no ASN");
+    match(asn, /^[0-9]+$/, "unexpected ASN format");
+
+    const ip = device?.last_ip || device?.initial_ip;
+    ok(ip, "no IP");
+    match(ip, /^([a-f0-9:]+:+)+[a-f0-9]+$/, "unexpected IP format");
   });
 
   await t.test("can have any value overridden", async () => {
@@ -22,7 +23,7 @@ test("session mock", async (t) => {
       id: "sess_123",
       device: {
         last_asn: "AS123",
-        last_ip: "118.234.180.183",
+        last_ip: "a822:9353:a2ab:9d71:7348:685b:00da:1601",
       },
     });
 
@@ -32,7 +33,7 @@ test("session mock", async (t) => {
       device,
       {
         last_asn: "AS123",
-        last_ip: "118.234.180.183",
+        last_ip: "a822:9353:a2ab:9d71:7348:685b:00da:1601",
       },
       "device not overridden"
     );

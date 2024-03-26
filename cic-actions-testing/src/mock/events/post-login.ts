@@ -13,7 +13,7 @@ import { identity } from "../identity";
 
 export const postLogin = define<OktaCIC.Events.PostLogin>(({ params }) => {
   const tenantId = params.tenant?.id || chance.n(chance.word, 2).join("-");
-  const hostname = `${tenantId}.auth0.com`;
+  const hostname = params.request?.hostname || `${tenantId}.auth0.com`;
 
   const connectionValue = params.connection
     ? (params.connection as Connection)
@@ -56,7 +56,7 @@ export const postLogin = define<OktaCIC.Events.PostLogin>(({ params }) => {
       identifier: `https://${hostname}/userinfo`,
     },
     tenant: { id: tenantId },
-    session: session(),
+    session: session({}, { ip: requestValue.ip, asn: requestValue.asn }),
     client: client(),
     request: requestValue,
     stats: {

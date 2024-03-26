@@ -94,4 +94,22 @@ test("Post-login event", async (t) => {
       );
     });
   });
+
+  await t.test("request informs other values", async (t) => {
+    await t.test("when not explicitly set", () => {
+      const { request, session, resource_server } = postLogin();
+
+      strictEqual(
+        resource_server.identifier,
+        `https://${request.hostname}/userinfo`,
+        "resource_server does does not match expected request hostname"
+      );
+
+      strictEqual(
+        session.device?.initial_ip || session.device?.last_ip,
+        request.ip,
+        "ip in session does does not match expected request ip"
+      );
+    });
+  });
 });
