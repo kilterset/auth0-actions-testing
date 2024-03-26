@@ -9,13 +9,20 @@ type Handler = (
 
 export function postLogin({
   cache,
+  now,
+  executedRules,
   ...attributes
 }: Parameters<typeof events.postLogin>[0] &
-  Omit<PostLoginOptions, "user"> = {}) {
+  Omit<PostLoginOptions, "user" | "request"> = {}) {
   const event = events.postLogin(attributes);
 
+  const { request, user } = event;
+
   const { implementation, state } = api.postLogin({
-    user: event.user,
+    user,
+    request,
+    now,
+    executedRules,
     cache,
   });
 
