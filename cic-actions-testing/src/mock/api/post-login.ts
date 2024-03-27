@@ -1,4 +1,3 @@
-import { mock } from "node:test";
 import OktaCIC, { Factor, MultifactorEnableOptions } from "../../types";
 import { cache as mockCache } from "./cache";
 import { user as mockUser } from "../user";
@@ -72,16 +71,7 @@ export interface PostLoginState {
   validation: {
     error: { code: string; message: string } | null;
   };
-}
-
-function notYetImplemented<T extends keyof OktaCIC.API.PostLogin>(
-  namespace: T
-) {
-  return new Proxy({} as OktaCIC.API.PostLogin[T], {
-    get(_, property) {
-      throw new Error(`${namespace}.${String(property)} not yet implemented`);
-    },
-  });
+  redirect: { url: URL; queryParams: Record<string, string> } | null;
 }
 
 export function postLogin({
@@ -148,6 +138,7 @@ export function postLogin({
     validation: {
       error: null,
     },
+    redirect: null,
   };
 
   const samlResponse = {
@@ -268,7 +259,29 @@ export function postLogin({
       },
     },
 
-    redirect: notYetImplemented("redirect"),
+    redirect: {
+      encodeToken: () => {
+        throw new Error("`redirect.encodeToken` is not implemented");
+      },
+      sendUserTo: (urlString, options) => {
+        const url = new URL(urlString);
+
+        if (options?.query) {
+          for (const [key, value] of Object.entries(options.query)) {
+            url.searchParams.append(key, value);
+          }
+        }
+
+        const queryParams = Object.fromEntries(url.searchParams.entries());
+
+        state.redirect = { url, queryParams };
+
+        return api;
+      },
+      validateToken: () => {
+        throw new Error("`redirect.validateToken` is not implemented");
+      },
+    },
 
     rules: {
       wasExecuted: (ruleId) => {

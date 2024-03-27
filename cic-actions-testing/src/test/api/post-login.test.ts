@@ -1,5 +1,5 @@
 import test from "node:test";
-import { strictEqual, deepStrictEqual, throws } from "node:assert";
+import { strictEqual, deepStrictEqual, throws, ok } from "node:assert";
 import { postLogin } from "../../mock/api";
 
 test("PostLogin API", async (t) => {
@@ -406,6 +406,49 @@ test("PostLogin API", async (t) => {
     deepStrictEqual(state.validation.error, {
       code: "E_KABOOM",
       message: "Something went wrong",
+    });
+  });
+
+  await t.test("redirect", async (t) => {
+    await t.test("sendUserTo", async (t) => {
+      await t.test("simple redirect", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        strictEqual(api.redirect.sendUserTo("https://example.com/r"), api);
+
+        const { redirect } = state;
+
+        ok(redirect, "redirect not set");
+        deepStrictEqual(redirect.queryParams, {}, "query should be empty");
+        strictEqual(redirect.url.href, "https://example.com/r", "url mismatch");
+      });
+
+      await t.test("redirect with consolidated GET parameters", async (t) => {
+        const { implementation: api, state } = postLogin();
+
+        strictEqual(
+          api.redirect.sendUserTo("https://example.com?bread=rye", {
+            query: { filling: "cheese", spread: "butter" },
+          }),
+          api
+        );
+
+        const { redirect } = state;
+
+        ok(redirect, "redirect not set");
+
+        deepStrictEqual(
+          redirect.queryParams,
+          { bread: "rye", filling: "cheese", spread: "butter" },
+          "unexpected query"
+        );
+
+        strictEqual(
+          redirect.url.href,
+          "https://example.com/?bread=rye&filling=cheese&spread=butter",
+          "url mismatch"
+        );
+      });
     });
   });
 });

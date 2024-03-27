@@ -103,8 +103,6 @@ export interface PostLogin {
       }
     ): PostLogin;
 
-    canRedirect(): boolean;
-
     validateToken(options: {
       secret: string;
       tokenParameterName?: string;
