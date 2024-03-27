@@ -357,16 +357,22 @@ test("PostLogin API", async (t) => {
     });
 
     await t.test(
-      "recordMethod throws an error if incorrectly used during onExecutePostLogin",
+      "recordMethod adds to the list of newly recorded methods",
       async (t) => {
         const { implementation: api, state } = postLogin();
 
-        // Note: In practice, an error is not thrown, but this seems like a
-        // better guard rail for test writers.
-        throws(
-          () => api.authentication.recordMethod("provider-url"),
-          /onContinuePostLogin/
-        );
+        strictEqual(api.authentication.recordMethod("https://method-1"), api);
+
+        deepStrictEqual(state.authentication.newlyRecordedMethods, [
+          "https://method-1",
+        ]);
+
+        api.authentication.recordMethod("https://method-2");
+
+        deepStrictEqual(state.authentication.newlyRecordedMethods, [
+          "https://method-1",
+          "https://method-2",
+        ]);
       }
     );
 
