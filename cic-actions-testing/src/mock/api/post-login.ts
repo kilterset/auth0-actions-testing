@@ -59,6 +59,7 @@ export interface PostLoginState {
   authentication: {
     challenge: FactorList | false;
     enrollment: FactorList | false;
+    newlyRecordedMethods: string[];
   };
   idToken: {
     claims: Record<string, unknown>;
@@ -105,6 +106,7 @@ export function postLogin({
     authentication: {
       challenge: false,
       enrollment: false,
+      newlyRecordedMethods: [],
     },
     cache: apiCache,
     idToken: {
@@ -246,9 +248,8 @@ export function postLogin({
         state.primaryUserId = primaryUserId;
       },
       recordMethod: (providerUrl) => {
-        throw new Error(
-          "`authentication.recordMethod` should only be used from within onContinuePostLogin"
-        );
+        state.authentication.newlyRecordedMethods.push(providerUrl);
+        return api;
       },
     },
 
