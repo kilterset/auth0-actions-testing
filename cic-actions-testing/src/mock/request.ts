@@ -7,7 +7,7 @@ export const request = define<OktaCIC.Request>(() => {
   const { name: connectionName } = connection();
 
   return {
-    ip: chance.ip(),
+    ip: chance.ipv6(),
     asn: chance.pickone([chance.asn(), undefined]),
     method: chance.pickone(["GET", "POST"]),
     query: {
