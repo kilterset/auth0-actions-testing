@@ -1,8 +1,9 @@
 import OktaCIC, { Factor, MultifactorEnableOptions } from "../../types";
-import { createHmac } from "node:crypto";
 import { cache as mockCache } from "./cache";
 import { user as mockUser } from "../user";
 import { request as mockRequest } from "../request";
+import { ok } from "node:assert";
+import { encodeHS256JWT, signHS256 } from "../../jwt/hs256";
 
 export interface PostLoginOptions {
   user?: OktaCIC.User;
@@ -273,11 +274,6 @@ export function postLogin({
       encodeToken: ({ expiresInSeconds, payload, secret }) => {
         expiresInSeconds = expiresInSeconds ?? 900;
 
-        const header = {
-          alg: "HS256",
-          typ: "JWT",
-        };
-
         const claims = {
           iss: requestValue.hostname,
           iat: Math.floor(now.getTime() / 1000),
@@ -287,18 +283,9 @@ export function postLogin({
           ...payload,
         };
 
-        const body = [header, claims]
-          .map((part) =>
-            Buffer.from(JSON.stringify(part)).toString("base64url")
-          )
-          .join(".");
-
-        const signature = createHmac("sha256", secret)
-          .update(body)
-          .digest("base64url");
-
-        return `${body}.${signature}`;
+        return encodeHS256JWT({ secret, claims });
       },
+
       sendUserTo: (urlString, options) => {
         const url = new URL(urlString);
 
@@ -314,8 +301,64 @@ export function postLogin({
 
         return api;
       },
-      validateToken: () => {
-        throw new Error("`redirect.validateToken` is not implemented");
+
+      validateToken: ({ tokenParameterName, secret }) => {
+        tokenParameterName = tokenParameterName ?? "session_token";
+        const params = { ...requestValue.query, ...requestValue.body };
+
+        const tokenValue = params[tokenParameterName];
+
+        ok(
+          tokenParameterName in params,
+          `There is no parameter called '${tokenParameterName}' available in either the POST body or query string.`
+        );
+
+        const [rawHeader, rawClaims, signature] = String(tokenValue).split(".");
+
+        const verify = (condition: boolean, message: string) => {
+          ok(condition, `The session token is invalid: ${message}`);
+        };
+
+        const [header, claims] = [rawHeader, rawClaims].map((part) =>
+          JSON.parse(Buffer.from(part, "base64url").toString())
+        );
+
+        console.log({ stateParam: params.state, stateClaim: claims.state });
+
+        verify(
+          claims.state === params.state,
+          "State in the token does not match the /continue state."
+        );
+
+        const expectedSignature = signHS256({
+          secret,
+          body: `${rawHeader}.${rawClaims}`,
+        });
+
+        verify(signature === expectedSignature, "Failed signature validation");
+
+        const expectedClaims = ["sub", "iss", "exp", "iat"];
+
+        for (const claim of expectedClaims) {
+          verify(claim in claims, "Missing or invalid standard claims");
+        }
+
+        verify(
+          header.typ?.toUpperCase() === "JWT",
+          "Unexpected token payload type"
+        );
+
+        verify(
+          claims.sub === userValue.user_id,
+          "The sub claim does not match the user_id."
+        );
+
+        verify(
+          claims.exp > Math.floor(now.getTime() / 1000),
+          "Token has expired."
+        );
+
+        return claims as Record<string, unknown>;
       },
     },
 
