@@ -1,6 +1,7 @@
 import test from "node:test";
 import { strictEqual, deepStrictEqual, throws, ok } from "node:assert";
 import { postLogin } from "../../mock/api";
+import { request, user } from "../../mock";
 
 test("PostLogin API", async (t) => {
   await t.test("access", async (t) => {
@@ -449,6 +450,56 @@ test("PostLogin API", async (t) => {
           "url mismatch"
         );
       });
+    });
+
+    await t.test("encodeToken", async (t) => {
+      const now = new Date("2024-01-01T00:00:00.000Z");
+      const nowUnixTimestamp = now.getTime() / 1000;
+
+      const { implementation: api } = postLogin({
+        request: request({
+          hostname: "example.com",
+          ip: "d666:171e:e7a4:1aa3:359a:a317:9f53:ee97",
+        }),
+        user: user({ user_id: "auth0|8150" }),
+        now,
+      });
+
+      const token = api.redirect.encodeToken({
+        expiresInSeconds: 42,
+        payload: { foo: "bar" },
+        secret: "shh",
+      });
+
+      const [header, payload, signature] = token.split(".");
+
+      const decodedHeader = JSON.parse(atob(header));
+      const decodedPayload = JSON.parse(atob(payload));
+
+      deepStrictEqual(
+        decodedHeader,
+        { alg: "HS256", typ: "JWT" },
+        "unexpected JWT header"
+      );
+
+      deepStrictEqual(
+        decodedPayload,
+        {
+          iss: "example.com",
+          iat: nowUnixTimestamp,
+          exp: nowUnixTimestamp + 42,
+          sub: "auth0|8150",
+          ip: "d666:171e:e7a4:1aa3:359a:a317:9f53:ee97",
+          foo: "bar",
+        },
+        "unexpected claims"
+      );
+
+      strictEqual(
+        signature,
+        "ZlLKLk7uJzDjD0nt2a08QiWMY1EPnhFIuc8WsSZPBvQ",
+        "invalid signature"
+      );
     });
   });
 });
