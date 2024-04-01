@@ -1,8 +1,8 @@
-import OktaCIC from "../types";
+import Auth0 from "../types";
 import { chance } from "./chance";
 import { define } from "./define";
 
-export const transaction = define<OktaCIC.Transaction>(({ params }) => {
+export const transaction = define<Auth0.Transaction>(({ params }) => {
   const locale = params.locale || chance.locale();
 
   return {

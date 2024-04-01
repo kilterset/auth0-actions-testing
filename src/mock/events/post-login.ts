@@ -1,5 +1,5 @@
 import { define } from "../define";
-import OktaCIC, { Connection } from "../../types";
+import Auth0, { Connection } from "../../types";
 import { user } from "../user";
 import { request } from "../request";
 import { authentication } from "../authentication";
@@ -11,7 +11,7 @@ import { client } from "../client";
 import { chance } from "../chance";
 import { identity } from "../identity";
 
-export const postLogin = define<OktaCIC.Events.PostLogin>(({ params }) => {
+export const postLogin = define<Auth0.Events.PostLogin>(({ params }) => {
   const tenantId = params.tenant?.id || chance.n(chance.word, 2).join("-");
   const hostname = params.request?.hostname || `${tenantId}.auth0.com`;
 

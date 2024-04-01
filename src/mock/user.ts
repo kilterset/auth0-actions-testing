@@ -1,4 +1,4 @@
-import OktaCIC from "../types";
+import Auth0 from "../types";
 import { chance } from "./chance";
 import { define } from "./define";
 import { identity } from "./identity";
@@ -7,7 +7,7 @@ interface UserTransientParams {
   includeFullName: boolean;
 }
 
-export const user = define<OktaCIC.User, UserTransientParams>(
+export const user = define<Auth0.User, UserTransientParams>(
   ({ transientParams, params }) => {
     // If the key is present in the params, use that value. Otherwise, randomly
     // pick between a value and undefined.

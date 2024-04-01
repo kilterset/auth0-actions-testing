@@ -1,12 +1,12 @@
-import OktaCIC from "../../types";
+import Auth0 from "../../types";
 
 // “If no lifetime is specified, a default of lifetime of 15 minutes will be used.”
 const FIFTEEN_MINS_IN_MS = 15 * 60 * 1000;
 
-export function cache(values: Record<string, string> = {}): OktaCIC.API.Cache {
+export function cache(values: Record<string, string> = {}): Auth0.API.Cache {
   const cacheMap = new Map<string, { value: string; expires_at: number }>();
 
-  const cache: OktaCIC.API.Cache = {
+  const cache: Auth0.API.Cache = {
     get: (key) => {
       const record = cacheMap.get(key);
 

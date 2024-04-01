@@ -1,9 +1,9 @@
-import OktaCIC from "../types";
+import Auth0 from "../types";
 import { chance } from "./chance";
 import { connection } from "./connection";
 import { define } from "./define";
 
-export const request = define<OktaCIC.Request>(() => {
+export const request = define<Auth0.Request>(() => {
   const { name: connectionName } = connection();
 
   return {
