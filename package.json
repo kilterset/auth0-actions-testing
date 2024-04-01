@@ -2,7 +2,6 @@
   "name": "@kilterset/auth0-actions-testing",
   "version": "0.0.1",
   "description": "Test and develop Auth0 Actions or Okta CIC Actions locally.",
-  "main": "dist/index.js",
   "scripts": {
     "test": "node --test $(find dist -name *.test.js)",
     "build": "tsc --build",
@@ -16,7 +15,16 @@
     "@types/chance": "^1.1.6",
     "@types/node": "^20.11.20",
     "chance": "^1.1.11",
+    "fetch-mock": "^9.11.0",
     "fishery": "^2.2.2",
+    "node-fetch": "^2.7.0",
     "typescript": "^5.3.3"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./node-test-runner": "./dist/test-runners/node-test-runner/index.js"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.11"
   }
 }
