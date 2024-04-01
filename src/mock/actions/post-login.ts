@@ -1,10 +1,10 @@
 import { api, events } from "..";
-import OktaCIC from "../../types";
+import Auth0 from "../../types";
 import { PostLoginOptions } from "../api";
 
 type Handler = (
-  event: OktaCIC.Events.PostLogin,
-  api: OktaCIC.API.PostLogin
+  event: Auth0.Events.PostLogin,
+  api: Auth0.API.PostLogin
 ) => Promise<void>;
 
 export function postLogin({

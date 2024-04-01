@@ -1,7 +1,7 @@
 {
-  "name": "@kilterset/cic-actions-testing",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@kilterset/auth0-actions-testing",
+  "version": "0.0.1",
+  "description": "Test and develop Auth0 Actions or Okta CIC Actions locally.",
   "main": "dist/index.js",
   "scripts": {
     "test": "node --test $(find dist -name *.test.js)",

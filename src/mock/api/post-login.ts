@@ -1,4 +1,4 @@
-import OktaCIC, { Factor, MultifactorEnableOptions } from "../../types";
+import Auth0, { Factor, MultifactorEnableOptions } from "../../types";
 import { cache as mockCache } from "./cache";
 import { user as mockUser } from "../user";
 import { request as mockRequest } from "../request";
@@ -6,11 +6,11 @@ import { ok } from "node:assert";
 import { encodeHS256JWT, signHS256 } from "../../jwt/hs256";
 
 export interface PostLoginOptions {
-  user?: OktaCIC.User;
+  user?: Auth0.User;
   cache?: Record<string, string>;
   executedRules?: string[];
   now?: ConstructorParameters<typeof Date>[0];
-  request?: OktaCIC.Request;
+  request?: Auth0.Request;
 }
 
 type SamlAttributeValue =
@@ -49,9 +49,9 @@ interface FactorList {
 }
 
 export interface PostLoginState {
-  user: OktaCIC.User;
+  user: Auth0.User;
   primaryUserId: string;
-  cache: OktaCIC.API.Cache;
+  cache: Auth0.API.Cache;
   access: { denied: false } | { denied: true; reason: string };
   accessToken: {
     claims: Record<string, unknown>;
@@ -157,7 +157,7 @@ export function postLogin({
     setAttribute: (attribute: string, value: SamlAttributeValue) => {
       state.samlResponse.attributes[attribute] = value;
     },
-  } as OktaCIC.API.PostLogin["samlResponse"];
+  } as Auth0.API.PostLogin["samlResponse"];
 
   for (const property in state.samlResponse) {
     if (state.samlResponse.hasOwnProperty(property)) {
@@ -169,7 +169,7 @@ export function postLogin({
 
       const setter = `set${key[0].toUpperCase()}${key.slice(
         1
-      )}` as keyof OktaCIC.API.PostLogin["samlResponse"];
+      )}` as keyof Auth0.API.PostLogin["samlResponse"];
 
       samlResponse[setter] = (value: unknown) => {
         state.samlResponse[key] = value as never;
@@ -177,7 +177,7 @@ export function postLogin({
     }
   }
 
-  const api: OktaCIC.API.PostLogin = {
+  const api: Auth0.API.PostLogin = {
     access: {
       deny: (reason) => {
         state.access = { denied: true, reason };

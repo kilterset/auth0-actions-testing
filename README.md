@@ -1,4 +1,4 @@
-# CIC Actions Testing
+# Auth0 Actions Testing
 
 ## Getting started
 
@@ -6,7 +6,7 @@ Create your project and install the library:
 
 ```sh
 npm init
-npm install @kilterset/cic-actions-testing --save-dev
+npm install @kilterset/auth0-actions-testing --save-dev
 ```
 
 ## Working with `a0deploy`

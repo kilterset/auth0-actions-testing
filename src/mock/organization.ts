@@ -1,8 +1,8 @@
-import OktaCIC from "../types";
+import Auth0 from "../types";
 import { chance } from "./chance";
 import { define } from "./define";
 
-export const organization = define<OktaCIC.Organization>(({ params }) => {
+export const organization = define<Auth0.Organization>(({ params }) => {
   const display_name = params.display_name || chance.company();
 
   const name = display_name

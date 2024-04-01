@@ -1,5 +1,5 @@
 import { fail, ok } from "assert";
-import OktaCIC from "../types";
+import Auth0 from "../types";
 import { chance } from "./chance";
 import { define } from "./define";
 import { riskAssessment } from "./risk-assessment";
@@ -9,7 +9,7 @@ interface AuthenticationTransientParmas {
 }
 
 export const authentication = define<
-  OktaCIC.Authentication,
+  Auth0.Authentication,
   AuthenticationTransientParmas
 >(({ params, transientParams }) => {
   let methods = params.methods;
@@ -31,7 +31,7 @@ export const authentication = define<
   };
 });
 
-export const authenticationMethod = define<OktaCIC.AuthenticationMethod>(
+export const authenticationMethod = define<Auth0.AuthenticationMethod>(
   ({ params }) => {
     const name =
       params.name ||

@@ -1,4 +1,4 @@
-import OktaCIC from "../types";
+import Auth0 from "../types";
 import { chance } from "./chance";
 import { define } from "./define";
 
@@ -10,7 +10,7 @@ const EXAMPLES: { name: string; strategy: string }[] = [
   { name: "auth10.com", strategy: "adfs" },
 ];
 
-export const connection = define<OktaCIC.Connection>(({ transientParams }) => {
+export const connection = define<Auth0.Connection>(({ transientParams }) => {
   return {
     id: `con_${chance.string({ length: 24, alpha: true, numeric: true })}`,
     metadata: {},

@@ -1,4 +1,4 @@
-import OktaCIC from "../types";
+import Auth0 from "../types";
 import { chance } from "./chance";
 import { define } from "./define";
 
@@ -8,7 +8,7 @@ interface SessionTransientParams {
   asn: string;
 }
 
-export const session = define<OktaCIC.Session, SessionTransientParams>(
+export const session = define<Auth0.Session, SessionTransientParams>(
   ({ params, transientParams }) => {
     const prefix =
       transientParams.deviceIdPrefix || chance.pickone(["last", "initial"]);

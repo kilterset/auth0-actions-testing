@@ -1,9 +1,9 @@
 import { fail, ok } from "assert";
-import OktaCIC from "../types";
+import Auth0 from "../types";
 import { chance } from "./chance";
 import { define } from "./define";
 
-export const impossibleTravelAssessment = define<OktaCIC.RiskAssessmentItem>(
+export const impossibleTravelAssessment = define<Auth0.RiskAssessmentItem>(
   () => {
     return {
       confidence: randomConfidence(),
@@ -24,7 +24,7 @@ export const impossibleTravelAssessment = define<OktaCIC.RiskAssessmentItem>(
   }
 );
 
-export const newDeviceAssessment = define<OktaCIC.RiskAssessmentItem>(() => {
+export const newDeviceAssessment = define<Auth0.RiskAssessmentItem>(() => {
   return {
     confidence: randomConfidence(),
     code: chance.pickone([
@@ -43,7 +43,7 @@ export const newDeviceAssessment = define<OktaCIC.RiskAssessmentItem>(() => {
   };
 });
 
-export const untrustedIPAssessment = define<OktaCIC.RiskAssessmentItem>(
+export const untrustedIPAssessment = define<Auth0.RiskAssessmentItem>(
   ({ params }) => {
     const ip = params.details?.ip || chance.ip();
     const matches = `${ip}/32`;
@@ -80,7 +80,7 @@ interface RiskAssessmentTransientParams {
 }
 
 export const riskAssessment = define<
-  OktaCIC.RiskAssessment,
+  Auth0.RiskAssessment,
   RiskAssessmentTransientParams
 >(({ transientParams }) => {
   const numAssessments =
@@ -105,7 +105,7 @@ export const riskAssessment = define<
   const assessments = assessmentTypes.reduce((acc, type) => {
     const assessment = riskAssessmentTypes[type]();
     return { ...acc, [type]: assessment };
-  }, {} as Record<keyof typeof riskAssessmentTypes, OktaCIC.RiskAssessmentItem>);
+  }, {} as Record<keyof typeof riskAssessmentTypes, Auth0.RiskAssessmentItem>);
 
   return {
     confidence: randomConfidence(),
