@@ -3,7 +3,9 @@
   "version": "0.0.2",
   "description": "Test and develop Auth0 Actions or Okta CIC Actions locally.",
   "scripts": {
-    "test": "node --test $(find dist -name *.test.js)",
+    "test": "npm run test:src && npm run test:examples",
+    "test:src": "node --test $(find dist -name *.test.js)",
+    "test:examples": "node --test examples",
     "build": "tsc --build",
     "build:watch": "tsc --watch",
     "clean": "tsc --build --clean"
