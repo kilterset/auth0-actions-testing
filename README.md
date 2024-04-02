@@ -58,8 +58,12 @@ exports.onExecutePostLogin = async (event, api) => {
 }
 ```
 
-Here's how you can test it:
+There are two scenarios to test:
 
+1. When the metadata hasn't been set, we should generate a new lucky number
+2. When the metadata has been set previously, we should leave the lucky number intact
+
+Here's how we can test them:
 
 ```js
 const test = require("node:test");
@@ -81,8 +85,9 @@ test("onExecutePostLogin", async (t) => {
       }),
     });
 
-    const { user } = await action.simulate(onExecutePostLogin);
-    const { lucky_number } = user.app_metadata;
+    await action.simulate(onExecutePostLogin);
+
+    const { lucky_number } = action.user.app_metadata;
 
     ok(
       typeof lucky_number === 'number',
@@ -103,8 +108,9 @@ test("onExecutePostLogin", async (t) => {
       }),
     });
 
-    const { user } = await action.simulate(onExecutePostLogin);
-    const { lucky_number } = user.app_metadata;
+    await action.simulate(onExecutePostLogin);
+
+    const { lucky_number } = action.user.app_metadata;
 
     strictEqual(
       lucky_number, 17, `Expected the user's lucky number to be unchanged`
@@ -119,6 +125,8 @@ Run this test with:
 ```sh
 node --test
 ```
+
+For more examples, see [the examples directory](examples).
 
 ## Working with `a0deploy`
 
