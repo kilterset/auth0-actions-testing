@@ -16,3 +16,5 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
+        env:
+          NODE_OPTIONS: --test-reporter spec
