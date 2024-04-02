@@ -323,8 +323,6 @@ export function postLogin({
           JSON.parse(Buffer.from(part, "base64url").toString())
         );
 
-        console.log({ stateParam: params.state, stateClaim: claims.state });
-
         verify(
           claims.state === params.state,
           "State in the token does not match the /continue state."
