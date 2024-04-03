@@ -1,19 +1,10 @@
 const test = require("node:test");
 const { strictEqual, deepStrictEqual, ok, strict } = require("node:assert");
 const { onExecutePostLogin, onContinuePostLogin } = require("./redirect");
-
-const {
-  signHS256,
-  encodeHS256JWT,
-  decodeJWTPayload,
-} = require("@kilterset/auth0-actions-testing/jwt");
-
-const {
-  actionTestSetup,
-} = require("@kilterset/auth0-actions-testing/node-test-runner");
+const { nodeTestRunner, jwt } = require("@kilterset/auth0-actions-testing");
 
 test("redirect and continue with signed data", async (t) => {
-  const { auth0 } = await actionTestSetup(t);
+  const { auth0 } = await nodeTestRunner.actionTestSetup(t);
 
   await t.test("redirects with signed data", async (t) => {
     const action = auth0.mock.actions.postLogin({
@@ -51,7 +42,7 @@ test("redirect and continue with signed data", async (t) => {
     // Test the signed JWT data payload
     const { session_token } = redirect.queryParams;
 
-    const decoded = decodeJWTPayload(session_token);
+    const decoded = jwt.decodeJWTPayload(session_token);
 
     strictEqual(decoded.sub, "007", "Unexpected sub claim");
 
@@ -66,7 +57,7 @@ test("redirect and continue with signed data", async (t) => {
     // Test the JWT was signed with the correct shared secret
     const [header, payload, signature] = session_token.split(".");
     const body = `${header}.${payload}`;
-    const expectedSignature = signHS256({ body, secret: "shh" });
+    const expectedSignature = jwt.signHS256({ body, secret: "shh" });
     strictEqual(signature, expectedSignature, "Unexpected JWT signature");
   });
 
@@ -82,7 +73,7 @@ test("redirect and continue with signed data", async (t) => {
       sandwich: "tuna", // custom claim
     };
 
-    const jwtFromApp = encodeHS256JWT({ claims, secret: "shh" });
+    const jwtFromApp = jwt.encodeHS256JWT({ claims, secret: "shh" });
 
     // Then your app redirects the user back to the continue URL with the state
 

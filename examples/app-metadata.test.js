@@ -1,13 +1,10 @@
 const test = require("node:test");
 const { ok, strictEqual } = require("node:assert");
 const { onExecutePostLogin } = require("./app-metadata");
-
-const {
-  actionTestSetup,
-} = require("@kilterset/auth0-actions-testing/node-test-runner");
+const { nodeTestRunner } = require("@kilterset/auth0-actions-testing");
 
 test("setting app metadata", async (t) => {
-  const { auth0 } = await actionTestSetup(t);
+  const { auth0 } = await nodeTestRunner.actionTestSetup(t);
 
   await t.test("records a lucky number", async () => {
     const action = auth0.mock.actions.postLogin({

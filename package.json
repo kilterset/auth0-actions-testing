@@ -1,20 +1,22 @@
 {
   "name": "@kilterset/auth0-actions-testing",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Test and develop Auth0 Actions or Okta CIC Actions locally.",
   "scripts": {
     "test": "npm run test:src && npm run test:examples",
     "test:src": "node --test $(find dist -name *.test.js)",
     "test:examples": "node --test examples",
-    "build": "tsc --build",
+    "build": "tsc --build && npm run build:copy-declarations",
     "build:watch": "tsc --watch",
-    "clean": "tsc --build --clean"
+    "build:clean": "rm -rf dist; npm run build",
+    "build:copy-declarations": "cd src && rsync -Rv $(find . -name '*.d.ts') ../dist/"
   },
   "author": "Pete Nicholls <pnicholls@kilterset.com>",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "@types/chance": "^1.1.6",
+    "@types/fetch-mock": "^7.3.8",
     "@types/node": "^20.11.20",
     "chance": "^1.1.11",
     "fetch-mock": "^9.11.0",
@@ -22,12 +24,9 @@
     "node-fetch": "^2.7.0",
     "typescript": "^5.3.3"
   },
-  "exports": {
-    ".": "./dist/index.js",
-    "./node-test-runner": "./dist/test-runners/node-test-runner/index.js",
-    "./jwt": "./dist/jwt/index.js"
-  },
   "devDependencies": {
     "@types/node-fetch": "^2.6.11"
-  }
+  },
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts"
 }
