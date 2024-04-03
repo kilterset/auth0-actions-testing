@@ -84,13 +84,11 @@ const { ok, strictEqual } = require("node:assert");
 const { onExecutePostLogin } = require("./code");
 
 // Import the setup for Node Test Runner
-const {
-  actionTestSetup,
-} = require("@kilterset/auth0-actions-testing/node-test-runner");
+const { nodeTestRunner } = require("@kilterset/auth0-actions-testing");
 
 test("Lucky Number", async (t) => {
   // Set up the test context
-  const { auth0 } = await actionTestSetup(t);
+  const { auth0 } = await nodeTestRunner.actionTestSetup(t);
 
   // Each test case needs an `await t.test(...)` call
   await t.test("records a lucky number", async () => {

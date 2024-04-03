@@ -1,13 +1,10 @@
 const test = require("node:test");
 const { strictEqual, deepStrictEqual, rejects } = require("node:assert");
 const { onExecutePostLogin } = require("./fetch-formdata");
-
-const {
-  actionTestSetup,
-} = require("@kilterset/auth0-actions-testing/node-test-runner");
+const { nodeTestRunner } = require("@kilterset/auth0-actions-testing");
 
 test("fetch with FormData (www-form-urlencoded)", async (t) => {
-  const { auth0, fetchMock } = await actionTestSetup(t);
+  const { auth0, fetchMock } = await nodeTestRunner.actionTestSetup(t);
 
   await t.test("service is notified when user logs in", async (t) => {
     fetchMock.mock("https://api.example.com/notify-user-logged-in", 201);

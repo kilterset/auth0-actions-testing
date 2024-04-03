@@ -1,13 +1,10 @@
 const test = require("node:test");
 const { strictEqual, deepStrictEqual, rejects } = require("node:assert");
 const { onExecutePostLogin } = require("./fetch-json");
-
-const {
-  actionTestSetup,
-} = require("@kilterset/auth0-actions-testing/node-test-runner");
+const { nodeTestRunner } = require("@kilterset/auth0-actions-testing");
 
 test("fetch with JSON", async (t) => {
-  const { auth0, fetchMock } = await actionTestSetup(t);
+  const { auth0, fetchMock } = await nodeTestRunner.actionTestSetup(t);
 
   await t.test("service is notified when user logs in", async (t) => {
     const responseJSON = { notificationWasSuccessful: true };
