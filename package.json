@@ -1,6 +1,6 @@
 {
   "name": "@kilterset/auth0-actions-testing",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Test and develop Auth0 Actions or Okta CIC Actions locally.",
   "scripts": {
     "test": "npm run test:src && npm run test:examples",
