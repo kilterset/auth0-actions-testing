@@ -6,7 +6,7 @@ const {
   actionTestSetup,
 } = require("@kilterset/auth0-actions-testing/node-test-runner");
 
-test("onExecutePostLogin", async (t) => {
+test("setting app metadata", async (t) => {
   const { auth0 } = await actionTestSetup(t);
 
   await t.test("records a lucky number", async () => {
@@ -27,7 +27,7 @@ test("onExecutePostLogin", async (t) => {
     );
 
     ok(
-      lucky_number < 42,
+      lucky_number <= 42,
       `Expected lucky number not to exceed the maximum allowed (got ${lucky_number})`
     );
   });

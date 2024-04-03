@@ -30,9 +30,25 @@ export function postLogin({
     await handler(event, implementation);
   }
 
-  return {
-    event,
-    simulate,
-    ...state,
-  };
+  return new Proxy(
+    {
+      event,
+      simulate,
+    },
+    {
+      get(target, prop) {
+        if (typeof prop !== "string") {
+          return;
+        }
+
+        if (prop in target) {
+          return target[prop as keyof typeof target];
+        }
+
+        if (prop in state) {
+          return state[prop as keyof typeof state];
+        }
+      },
+    }
+  );
 }

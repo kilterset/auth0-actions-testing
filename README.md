@@ -1,10 +1,30 @@
 # Auth0 Actions Testing
 
+[![Published on NPM](https://img.shields.io/npm/v/@kilterset/auth0-actions-testing)](https://www.npmjs.com/package/@kilterset/auth0-actions-testing)
+[![Built by Kilterset](https://img.shields.io/badge/built_by-Kilterset-ff5f16)](https://kilterset.com)
+
+Allows you to develop and test Auth0 Actions and Okta CIC Actions locally.
+
+This library provides you with the setup to test complex actions. Customise test event payloads using realistic, randomized data. Test Action behaviour such as `fetch`ing an extenal service, event secrets, setting metadata, caching data, denying access, redirecting users mid-login, and more.
+
+The following [Flows](https://auth0.com/docs/customize/actions/flows-and-triggers) are supported:
+
+| Flow                   | Support |
+| ---------------------- | ------- |
+| Login                  | ✓       |
+| Machine to Machine     | planned |
+| Password Reset         | planned |
+| Pre User Registration  | planned |
+| Post User Registration | planned |
+| Post Change Password   | planned |
+| Send Phone Message     | planned |
+
+
 ## Getting started
 
 ### Install Node.js v18
 
-**Important:** This library only supports **Node v18**, which is the latest version of Node.js Auth0 supports at time of writing.
+**Important:** Node v18 LTS is latest version of Node.js Auth0 currently supports.
 
 Make sure you're running Node v18. If you have a newer version of Node installed, we recommend using a Node version manager such as [`nvm`](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n).
 
@@ -128,6 +148,16 @@ node --test
 
 For more examples, see [the examples directory](examples).
 
+## Using `require`
+
+In Auth0, dependencies are configured in the Action editor.
+
+When testing locally, you'll need to adding the dependency to your `package.json` first:
+
+```sh
+npm install axios --save-dev
+```
+
 ## Working with `a0deploy`
 
 While you can copy and paste Actions by hand, we recommend exporting and importing Actions with Auth0's [`a0deploy`](https://auth0.com/docs/deploy-monitor/deploy-cli-tool) command-line interface.
@@ -173,3 +203,4 @@ We recommend adding your the tests alongside the action:
         ├── code.js
         └── test.js
 ```
+

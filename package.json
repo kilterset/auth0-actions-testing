@@ -1,6 +1,6 @@
 {
   "name": "@kilterset/auth0-actions-testing",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Test and develop Auth0 Actions or Okta CIC Actions locally.",
   "scripts": {
     "test": "npm run test:src && npm run test:examples",
@@ -24,7 +24,8 @@
   },
   "exports": {
     ".": "./dist/index.js",
-    "./node-test-runner": "./dist/test-runners/node-test-runner/index.js"
+    "./node-test-runner": "./dist/test-runners/node-test-runner/index.js",
+    "./jwt": "./dist/jwt/index.js"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.11"
