@@ -5,7 +5,7 @@
 
 Allows you to develop and test Auth0 Actions and Okta CIC Actions locally.
 
-This library provides you with the setup to test complex actions. Customise test event payloads using realistic, randomized data. Test Action behaviour such as `fetch`ing an extenal service, event secrets, setting metadata, caching data, denying access, redirecting users mid-login, and more.
+This library provides you with the setup to test complex actions. Customise test event payloads using realistic, randomized data. Test Action behaviour such as `fetch`ing an external service, providing event secrets, setting metadata, caching data, denying access, redirecting users mid-login, and more.
 
 The following [Flows](https://auth0.com/docs/customize/actions/flows-and-triggers) are supported:
 
@@ -61,82 +61,74 @@ npm install @kilterset/auth0-actions-testing --save-dev
 
 ### Writing your first test
 
-You can write tests with the built-in [Node.js Test Runner](https://nodejs.org/docs/latest-v18.x/api/test.html).
+You can write tests with the built-in [Node.js Test Runner](https://nodejs.org/docs/latest-v18.x/api/test.html) and [assertions](https://nodejs.org/docs/latest-v18.x/api/assert.html).
 
 Here's a simple Action which records a lucky number on the user's `app_metadata` if they don't already have one:
 
 ```js
+// code.js
 exports.onExecutePostLogin = async (event, api) => {
-  if (event.user.app_metadata['lucky_number']) {
-    // Do nothing. User already has a lucky number.
-    return;
-  }
-
   const diceRoll = Math.round(Math.random() * event.secrets.MAX_LUCKY_NUMBER);
-
   api.user.setAppMetadata('lucky_number', diceRoll);
 }
 ```
 
-There are two scenarios to test:
-
-1. When the metadata hasn't been set, we should generate a new lucky number
-2. When the metadata has been set previously, we should leave the lucky number intact
-
-Here's how we can test them:
+Let's create a test scenario for this:
 
 ```js
+// test.js
 const test = require("node:test");
 const { ok, strictEqual } = require("node:assert");
+
+// Import the action
 const { onExecutePostLogin } = require("./code");
 
+// Import the setup for Node Test Runner
 const {
   actionTestSetup,
 } = require("@kilterset/auth0-actions-testing/node-test-runner");
 
-test("onExecutePostLogin", async (t) => {
-  const { fetchMock, auth0 } = await actionTestSetup(t);
+test("Lucky Number", async (t) => {
+  // Set up the test context
+  const { auth0 } = await actionTestSetup(t);
 
+  // Each test case needs an `await t.test(...)` call
   await t.test("records a lucky number", async () => {
+    // Prepare the action, specifying any explicit preconditions.
+    // Any properties you omit will be filled by realistic, random data.
     const action = auth0.mock.actions.postLogin({
-      secrets: { MAX_LUCKY_NUMBER: 42 },
+      secrets: {
+        MAX_LUCKY_NUMBER: 42, // simulate the secrets configured in the Action
+      },
       user: auth0.mock.user({
         app_metadata: {},
+        // ...any additional user properties you want to explicitly declare
       }),
+      // ...other event customisations
+      // request: auth0.mock.request({ ... }),
+      // authentication: auth0.mock.authentication({ ... }),
+      // etc.
     });
 
+    // Simulate your action
     await action.simulate(onExecutePostLogin);
 
+    // Test how the user's app_metadata was updatd
     const { lucky_number } = action.user.app_metadata;
 
-    ok(
-      typeof lucky_number === 'number',
-      `Expected the user's lucky number to be a number (got ${lucky_number})`
-    )
-
-    ok(
-      lucky_number < 42,
-      `Expected lucky number not to exceed the maximum allowed (got ${lucky_number})`
-    )
-  });
-
-  await t.test("does not overwrite lucky numbers", async () => {
-    const action = auth0.mock.actions.postLogin({
-      secrets: { MAX_LUCKY_NUMBER: 42 },
-      user: auth0.mock.user({
-        app_metadata: { lucky_number: 17 },
-      }),
-    });
-
-    await action.simulate(onExecutePostLogin);
-
-    const { lucky_number } = action.user.app_metadata;
-
+    // Checking equality (see deepStrictEqual for comparing objects)
     strictEqual(
-      lucky_number, 17, `Expected the user's lucky number to be unchanged`
+      typeof lucky_number,
+      "number",
+      "Expected the user's lucky number to be a number"
+    );
+
+    // Checking truthiness
+    ok(
+      lucky_number >=0 && lucky_number <= 42,
+      `Expected lucky number to be between 0 and 42 (got ${lucky_number})`
     );
   });
-
 });
 ```
 
@@ -147,6 +139,8 @@ node --test
 ```
 
 For more examples, see [the examples directory](examples).
+
+These include testing `fetch` requests, testing redirect JWTs, and more.
 
 ## Using `require`
 
@@ -164,7 +158,7 @@ While you can copy and paste Actions by hand, we recommend exporting and importi
 
 Follow the [Configure the Deploy CLI](https://auth0.com/docs/deploy-monitor/deploy-cli-tool/configure-the-deploy-cli#auth0_included_only) guide to get started.
 
-`a0deploy` can help manage all of your Auth0 configuration, but you can limit it to Actions with the `AUTH0_INCLUDED_ONLY` option:
+`a0deploy` can help manage all of your Auth0 configuration, but you may want to limit it to Actions initially. You can optionally do this with the `AUTH0_INCLUDED_ONLY` option:
 
 ```json
 {
@@ -194,7 +188,7 @@ Actions will be stored like this:
 └── tenant.yaml
 ```
 
-We recommend adding your the tests alongside the action:
+Follow the Getting Started instructions above to set up the project from here. We recommend adding your the tests alongside the action:
 
 ```
 .
@@ -203,4 +197,3 @@ We recommend adding your the tests alongside the action:
         ├── code.js
         └── test.js
 ```
-
