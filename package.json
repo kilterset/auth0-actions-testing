@@ -24,7 +24,8 @@
   },
   "exports": {
     ".": "./dist/index.js",
-    "./node-test-runner": "./dist/test-runners/node-test-runner/index.js"
+    "./node-test-runner": "./dist/test-runners/node-test-runner/index.js",
+    "./jwt": "./dist/jwt/index.js"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.11"
