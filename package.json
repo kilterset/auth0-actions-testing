@@ -1,7 +1,17 @@
 {
   "name": "@kilterset/auth0-actions-testing",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Test and develop Auth0 Actions or Okta CIC Actions locally.",
+  "repository": "https://github.com/kilterset/auth0-actions-testing",
+  "homepage": "https://github.com/kilterset/auth0-actions-testing#readme",
+  "bugs": "https://github.com/kilterset/auth0-actions-testing/issues",
+  "keywords": [
+    "auth0",
+    "okta",
+    "cic",
+    "actions",
+    "testing"
+  ],
   "scripts": {
     "test": "npm run test:src && npm run test:examples",
     "test:src": "node --test $(find dist -name *.test.js)",
@@ -11,7 +21,10 @@
     "build:clean": "rm -rf dist; npm run build",
     "build:copy-declarations": "cd src && rsync -Rv $(find . -name '*.d.ts') ../dist/"
   },
-  "author": "Pete Nicholls <pnicholls@kilterset.com>",
+  "contributors": [
+    "Pete Nicholls <pnicholls@kilterset.com>",
+    "Matt Wratt <mwratt@kilterset.com>"
+  ],
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {

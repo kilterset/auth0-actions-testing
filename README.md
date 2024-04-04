@@ -5,7 +5,7 @@
 
 Allows you to develop and test Auth0 Actions and Okta CIC Actions locally.
 
-This library provides you with the setup to test complex actions. Customise test event payloads using realistic, randomized data. Test Action behaviour such as `fetch`ing an external service, providing event secrets, setting metadata, caching data, denying access, redirecting users mid-login, and more.
+This library provides you with the setup to test complex actions. Customise test event payloads using realistic, randomized data. Test Action behaviour such as `fetch`ing an external service, providing event secrets, setting metadata, caching data, denying access, redirecting users mid-login, and more. Provides type-hinting to your editor.
 
 The following [Flows](https://auth0.com/docs/customize/actions/flows-and-triggers) are supported:
 
@@ -149,6 +149,68 @@ When testing locally, you'll need to adding the dependency to your `package.json
 ```sh
 npm install axios --save-dev
 ```
+
+## Customizing the `event`
+
+Each `event` contains realistic, randomized data by default. Each Flow's [documentation](https://auth0.com/docs/customize/actions/flows-and-triggers) explains the `event` object in detail.
+
+The philosophy behind this library is that you are more likely to catch bugs when you randomize data than if you test the same static data each time.
+
+```js
+const action = auth0.mock.actions.postLogin();
+console.log(action.user);
+```
+
+The first time you run this test, you might get:
+
+```js
+{ user_id: 'auth0|978f3d31c89b09fc1e841177', ... }
+```
+
+The second time, you might get:
+
+```js
+{ user_id: 'adfs|822f97ea51247948366e0275', ... }
+```
+
+Some event properties can be optional. On some test runs they will be `undefined`, on others they might be set to a valid value. Some properties may include variable lists of values. The length of these lists may change each test run.
+
+If the behaviour of your Action depends on a property of the event being a particular value, it should be expliclity defined in your test:
+
+```js
+const action = auth0.mock.actions.postLogin({
+  user: auth0.mock.user({
+    user_id: 'an-explicit-id',
+    name: 'Barry'
+  }),
+});
+```
+
+In this example, `auth0.mock.user` will return a user with randomized properties _except_ for `user_id` and `name`, which will now always return `'an-explicit-id'` and `'Barry'` for this test.
+
+## Testing `api` calls
+
+Each Flow's [documentation](https://auth0.com/docs/customize/actions/flows-and-triggers) explains the `api` object in more detail.
+
+Testing is typically done by checking the state of the action after it's run. For example:
+
+```js
+exports.onExecutePostLogin = async (event, api) => {
+  api.access.deny("Nobody is allowed!");
+}
+```
+
+The test:
+
+```js
+const action = auth0.mock.actions.postLogin();
+await action.simulate(onExecutePostLogin);
+
+ok(action.access.denied, 'Expected access to be denied');
+match(action.access.denied.reason, /nobody is allowed/i, 'Unexpected message');
+```
+
+Take a look at [the examples directory](examples) or the type hinting on the `actions` object to learn which properties to assert against.
 
 ## Working with `a0deploy`
 
