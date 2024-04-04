@@ -4,7 +4,6 @@ import { request as mockRequest } from "../request";
 
 export interface CredentialsExchangeOptions {
   cache?: Record<string, string>;
-  request?: Auth0.Request;
 }
 
 export interface CredentialsExchangeState {
@@ -16,11 +15,9 @@ export interface CredentialsExchangeState {
 }
 
 export function credentialsExchange({
-  request,
   cache,
 }: CredentialsExchangeOptions = {}) {
   const apiCache = mockCache(cache);
-  const requestValue = request ?? mockRequest();
 
   const state: CredentialsExchangeState = {
     access: { denied: false },

@@ -14,12 +14,7 @@ export function credentialsExchange({
   Omit<CredentialsExchangeOptions, "request"> = {}) {
   const event = events.credentialsExchange(attributes);
 
-  const { request } = event;
-
-  const { implementation, state } = api.credentialsExchange({
-    request,
-    cache,
-  });
+  const { implementation, state } = api.credentialsExchange({ cache });
 
   async function simulate(handler: Handler) {
     await handler(event, implementation);
