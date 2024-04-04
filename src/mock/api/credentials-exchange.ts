@@ -22,8 +22,6 @@ export function credentialsExchange({
   const apiCache = mockCache(cache);
   const requestValue = request ?? mockRequest();
 
-  let numCallsToSetPrimaryUser = 0;
-
   const state: CredentialsExchangeState = {
     access: { denied: false },
     accessToken: {
