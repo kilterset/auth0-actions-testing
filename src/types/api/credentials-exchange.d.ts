@@ -1,8 +1,5 @@
 import { Cache } from "./cache";
 
-/**
- * TODO: Incomplete interface
- */
 export interface CredentialsExchange {
   /**
    * Modify the user's login access, such as by rejecting the login attempt.
