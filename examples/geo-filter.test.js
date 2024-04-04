@@ -18,13 +18,13 @@ test("Filter access based on continent code", async (t) => {
     strictEqual(
       action.access.code,
       "invalid_request",
-      "Expected denied code 'invalid_request'"
+      "Unexpected denial code"
     );
 
     strictEqual(
       action.access.reason,
       "Access from North America is not allowed.",
-      "Expected denied reason 'Access from North America is not allowed.'"
+      "Unexpected denial reason"
     );
   });
 
