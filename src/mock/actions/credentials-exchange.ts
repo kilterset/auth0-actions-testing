@@ -9,7 +9,6 @@ type Handler = (
 
 export function credentialsExchange({
   cache,
-  now,
   ...attributes
 }: Parameters<typeof events.credentialsExchange>[0] &
   Omit<CredentialsExchangeOptions, "request"> = {}) {
@@ -19,7 +18,6 @@ export function credentialsExchange({
 
   const { implementation, state } = api.credentialsExchange({
     request,
-    now,
     cache,
   });
 

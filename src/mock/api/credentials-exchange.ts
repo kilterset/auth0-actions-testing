@@ -4,7 +4,6 @@ import { request as mockRequest } from "../request";
 
 export interface CredentialsExchangeOptions {
   cache?: Record<string, string>;
-  now?: ConstructorParameters<typeof Date>[0];
   request?: Auth0.Request;
 }
 
@@ -19,12 +18,9 @@ export interface CredentialsExchangeState {
 export function credentialsExchange({
   request,
   cache,
-  now: nowValue,
 }: CredentialsExchangeOptions = {}) {
   const apiCache = mockCache(cache);
   const requestValue = request ?? mockRequest();
-
-  const now = new Date(nowValue || Date.now());
 
   let numCallsToSetPrimaryUser = 0;
 
