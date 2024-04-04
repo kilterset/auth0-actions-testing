@@ -1,4 +1,5 @@
 export * from "./api/post-login";
+export * from "./api/credentials-exchange";
 export * from "./authentication";
 export * from "./client";
 export * from "./connection";
