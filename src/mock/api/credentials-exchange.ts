@@ -1,9 +1,6 @@
-import Auth0, { Factor, MultifactorEnableOptions } from "../../types";
+import Auth0 from "../../types";
 import { cache as mockCache } from "./cache";
-import { user as mockUser } from "../user";
 import { request as mockRequest } from "../request";
-import { ok } from "node:assert";
-import { encodeHS256JWT, signHS256 } from "../../jwt/hs256";
 
 export interface CredentialsExchangeOptions {
   cache?: Record<string, string>;
