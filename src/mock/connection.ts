@@ -10,7 +10,7 @@ const EXAMPLES: { name: string; strategy: string }[] = [
   { name: "auth10.com", strategy: "adfs" },
 ];
 
-export const connection = define<Auth0.Connection>(({ transientParams }) => {
+export const connection = define<Auth0.Connection>(() => {
   return {
     id: `con_${chance.string({ length: 24, alpha: true, numeric: true })}`,
     metadata: {},

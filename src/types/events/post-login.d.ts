@@ -1,8 +1,6 @@
 import { Authentication } from "../authentication";
 import { Client } from "../client";
 import { Connection } from "../connection";
-import { Event } from "./post-login";
-import { Identity } from "../identity";
 import { Organization } from "../organization";
 import { Request } from "../request";
 import { Session } from "../session";
