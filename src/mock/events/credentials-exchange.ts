@@ -12,7 +12,7 @@ import { chance } from "../chance";
 import { identity } from "../identity";
 
 export const credentialsExchange = define<Auth0.Events.CredentialsExchange>(({ params }) => {
-  const tenantId = params.tenant?.id || chance.n(chance.word, 2).join("-");
+  const tenantId = params.tenant?.id || chance.auth0().tenantId();
   const hostname = params.request?.hostname || `${tenantId}.auth0.com`;
 
   const requestValue = request({
