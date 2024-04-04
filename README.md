@@ -12,7 +12,7 @@ The following [Flows](https://auth0.com/docs/customize/actions/flows-and-trigger
 | Flow                   | Support |
 | ---------------------- | ------- |
 | Login                  | ✓       |
-| Machine to Machine     | planned |
+| Machine to Machine     | ✓       |
 | Password Reset         | planned |
 | Pre User Registration  | planned |
 | Post User Registration | planned |
