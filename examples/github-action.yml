@@ -1,0 +1,22 @@
+# Place this in .github/workflows/test-actions.yml
+name: Test Auth0 Actions
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Uncomment the lines below if the package.json is located in a subdirectory
+    #
+    # defaults:
+    #   run:
+    #     working-directory: ./actions
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+      - run: npm ci
+      - run: npm test

@@ -136,7 +136,9 @@ Run this test with:
 node --test
 ```
 
-For more examples, see [the examples directory](examples).
+(You can set this as your `test` script command in your `package.json`.)
+
+For more examples, see [the examples directory](https://github.com/kilterset/auth0-actions-testing/tree/main/examples).
 
 These include testing `fetch` requests, testing redirect JWTs, and more.
 
@@ -210,7 +212,7 @@ ok(action.access.denied, 'Expected access to be denied');
 match(action.access.denied.reason, /nobody is allowed/i, 'Unexpected message');
 ```
 
-Take a look at [the examples directory](examples) or the type hinting on the `actions` object to learn which properties to assert against.
+Take a look at [the examples directory](https://github.com/kilterset/auth0-actions-testing/tree/main/examples) or the type hinting on the `actions` object to learn which properties to assert against.
 
 ## Working with `a0deploy`
 
@@ -257,3 +259,7 @@ Follow the Getting Started instructions above to set up the project from here. W
         ├── code.js
         └── test.js
 ```
+
+## Running in CI
+
+See [our GitHub Actions example](https://github.com/kilterset/auth0-actions-testing/blob/main/examples/github-action.yml).
