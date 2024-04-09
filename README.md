@@ -3,7 +3,7 @@
 [![Published on NPM](https://img.shields.io/npm/v/@kilterset/auth0-actions-testing)](https://www.npmjs.com/package/@kilterset/auth0-actions-testing)
 [![Built by Kilterset](https://img.shields.io/badge/built_by-Kilterset-ff5f16)](https://kilterset.com)
 
-Allows you to develop and test Auth0 Actions and Okta CIC Actions locally.
+Allows you to develop and test Auth0 Actions and Okta CIC Actions locally. This project is not affilliated with Auth0.
 
 This library provides you with the setup to test complex actions. Customise test event payloads using realistic, randomized data. Test Action behaviour such as `fetch`ing an external service, providing event secrets, setting metadata, caching data, denying access, redirecting users mid-login, and more. Provides type-hinting to your editor.
 
@@ -14,7 +14,7 @@ The following [Flows](https://auth0.com/docs/customize/actions/flows-and-trigger
 | Login                  | ✓       |
 | Machine to Machine     | ✓       |
 | Password Reset         | ✓       |
-| Pre User Registration  | planned |
+| Pre User Registration  | ✓       |
 | Post User Registration | planned |
 | Post Change Password   | planned |
 | Send Phone Message     | planned |
