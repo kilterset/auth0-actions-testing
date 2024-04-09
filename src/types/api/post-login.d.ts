@@ -30,9 +30,6 @@ export interface MultifactorEnableOptions {
   providerOptions?: Record<string, unknown>;
 }
 
-/**
- * TODO: Incomplete interface
- */
 export interface PostLogin {
   /**
    * Modify the user's login access, such as by rejecting the login attempt.

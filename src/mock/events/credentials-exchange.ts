@@ -11,31 +11,37 @@ import { client } from "../client";
 import { chance } from "../chance";
 import { identity } from "../identity";
 
-export const credentialsExchange = define<Auth0.Events.CredentialsExchange>(({ params }) => {
-  const tenantId = params.tenant?.id || chance.auth0().tenantId();
-  const hostname = params.request?.hostname || `${tenantId}.auth0.com`;
+export const credentialsExchange = define<Auth0.Events.CredentialsExchange>(
+  ({ params }) => {
+    const tenantId = params.tenant?.id || chance.auth0().tenantId();
+    const hostname = params.request?.hostname || `${tenantId}.auth0.com`;
 
-  const requestValue = request({
-    hostname,
-    ...params.request,
-    query: {
-      ...params.request?.query,
-    },
-  });
+    const requestValue = request({
+      hostname,
+      ...params.request,
+      query: {
+        ...params.request?.query,
+      },
+    });
 
-  const transactionValue = transaction();
+    const transactionValue = transaction();
 
-  return {
-    accessToken: {
-      customClaims: (params?.accessToken?.customClaims || {}) as Record<string, string>,
-      scope: transactionValue.requested_scopes,
-    },
-    client: client(),
-    request: requestValue,
-    resource_server: {
-      identifier: `https://${hostname}/userinfo`,
-    },
-    tenant: { id: tenantId },
-    transaction: { requested_scopes: transactionValue.requested_scopes },
-  };
-});
+    return {
+      accessToken: {
+        customClaims: (params?.accessToken?.customClaims || {}) as Record<
+          string,
+          string
+        >,
+        scope: transactionValue.requested_scopes,
+      },
+      client: client(),
+      request: requestValue,
+      resource_server: {
+        identifier: `https://${hostname}/userinfo`,
+      },
+      tenant: { id: tenantId },
+      transaction: { requested_scopes: transactionValue.requested_scopes },
+      secrets: {},
+    };
+  }
+);
