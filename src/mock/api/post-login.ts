@@ -4,6 +4,7 @@ import { user as mockUser } from "../user";
 import { request as mockRequest } from "../request";
 import { ok } from "node:assert";
 import { encodeHS256JWT, signHS256 } from "../../jwt/hs256";
+import { accessTokenMock } from "./access-token";
 
 export interface PostLoginOptions {
   user?: Auth0.User;
@@ -88,6 +89,7 @@ export function postLogin({
   now: nowValue,
 }: PostLoginOptions = {}) {
   const apiCache = mockCache(cache);
+  const accessToken = accessTokenMock("PostLogin");
   const executedRules = optionallyExecutedRules ?? [];
   const userValue = user ?? mockUser();
   const requestValue = request ?? mockRequest();
@@ -100,10 +102,7 @@ export function postLogin({
     user: userValue,
     primaryUserId: userValue.user_id,
     access: { denied: false },
-    accessToken: {
-      claims: {},
-      scopes: [],
-    },
+    accessToken: accessToken.state,
     authentication: {
       challenge: false,
       enrollment: false,
@@ -185,27 +184,8 @@ export function postLogin({
       },
     },
 
-    accessToken: {
-      addScope: (name) => {
-        state.accessToken.scopes = [
-          ...new Set(state.accessToken.scopes).add(name),
-        ];
-
-        return api;
-      },
-
-      removeScope: (name) => {
-        state.accessToken.scopes = state.accessToken.scopes.filter(
-          (value) => value !== name
-        );
-
-        return api;
-      },
-
-      setCustomClaim: (name, value) => {
-        state.accessToken.claims[name] = value;
-        return api;
-      },
+    get accessToken() {
+      return accessToken.build(api);
     },
 
     authentication: {

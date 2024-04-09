@@ -1,6 +1,7 @@
 import Auth0 from "../../types";
 import { cache as mockCache } from "./cache";
 import { request as mockRequest } from "../request";
+import { accessTokenMock } from "./access-token";
 
 export interface CredentialsExchangeOptions {
   cache?: Record<string, string>;
@@ -18,12 +19,11 @@ export function credentialsExchange({
   cache,
 }: CredentialsExchangeOptions = {}) {
   const apiCache = mockCache(cache);
+  const accessToken = accessTokenMock("CredentialsExchange")
 
   const state: CredentialsExchangeState = {
     access: { denied: false },
-    accessToken: {
-      claims: {},
-    },
+    accessToken: accessToken.state,
     cache: apiCache,
   };
 
@@ -35,11 +35,8 @@ export function credentialsExchange({
       },
     },
 
-    accessToken: {
-      setCustomClaim: (name, value) => {
-        state.accessToken.claims[name] = value;
-        return api;
-      },
+    get accessToken() {
+      return accessToken.build(api);
     },
 
     cache: apiCache,
