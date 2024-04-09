@@ -17,4 +17,7 @@ export interface CredentialsExchange {
   transaction: {
     requested_scopes: string[];
   };
+  secrets: {
+    [key: string]: string;
+  };
 }
