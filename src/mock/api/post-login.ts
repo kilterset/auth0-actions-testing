@@ -12,6 +12,7 @@ import { multifactorMock } from "./multifactor";
 import { redirectMock } from "./redirect";
 import { userMock } from "./user";
 import { samlResponseMock } from "./saml-response";
+import { validationMock } from "./validation";
 
 export interface PostLoginOptions {
   user?: Auth0.User;
@@ -106,6 +107,7 @@ export function postLogin({
   const redirect = redirectMock("PostLogin", { now, request: requestValue, user: userValue });
   const userApiMock = userMock("PostLogin", { user: userValue });
   const samlResponse = samlResponseMock("PostLogin");
+  const validation = validationMock("PostLogin");
 
   const state: PostLoginState = {
     user: userApiMock.state,
@@ -116,9 +118,7 @@ export function postLogin({
     idToken: idToken.state,
     multifactor: multifactor.state,
     samlResponse: samlResponse.state,
-    validation: {
-      error: null,
-    },
+    validation: validation.state,
     redirect: redirect.state,
   };
 
@@ -163,11 +163,8 @@ export function postLogin({
       return userApiMock.build(api);
     },
 
-    validation: {
-      error: (code, message) => {
-        state.validation.error = { code, message };
-        return api;
-      },
+    get validation() {
+      return validation.build(api);
     },
   };
 
