@@ -7,6 +7,7 @@ import { encodeHS256JWT, signHS256 } from "../../jwt/hs256";
 import { accessTokenMock } from "./access-token";
 import { accessMock } from "./access";
 import { authenticationMock, FactorList } from "./authentication";
+import { idTokenMock } from "./id-token";
 
 export interface PostLoginOptions {
   user?: Auth0.User;
@@ -93,6 +94,7 @@ export function postLogin({
   const access = accessMock("PostLogin");
   const accessToken = accessTokenMock("PostLogin");
   const authentication = authenticationMock("PostLogin", { userId: userValue.user_id });
+  const idToken = idTokenMock("PostLogin");
 
   const now = new Date(nowValue || Date.now());
 
@@ -102,9 +104,7 @@ export function postLogin({
     accessToken: accessToken.state,
     authentication: authentication.state,
     cache: apiCache,
-    idToken: {
-      claims: {},
-    },
+    idToken: idToken.state,
     multifactor: {
       enabled: false,
     },
@@ -184,11 +184,8 @@ export function postLogin({
 
     cache: apiCache,
 
-    idToken: {
-      setCustomClaim: (name, value) => {
-        state.idToken.claims[name] = value;
-        return api;
-      },
+    get idToken() {
+      return idToken.build(api);
     },
 
     multifactor: {
