@@ -9,6 +9,7 @@ import { accessMock } from "./access";
 import { authenticationMock, FactorList } from "./authentication";
 import { idTokenMock } from "./id-token";
 import { multifactorMock } from "./multifactor";
+import { redirectMock } from "./redirect";
 
 export interface PostLoginOptions {
   user?: Auth0.User;
@@ -77,7 +78,9 @@ export interface PostLoginState {
   validation: {
     error: { code: string; message: string } | null;
   };
-  redirect: { url: URL; queryParams: Record<string, string> } | null;
+  redirect: {
+    target: { url: URL; queryParams: Record<string, string> } | null;
+  };
 }
 
 export function postLogin({
@@ -90,6 +93,7 @@ export function postLogin({
   const userValue = user ?? mockUser();
   const executedRules = optionallyExecutedRules ?? [];
   const requestValue = request ?? mockRequest();
+  const now = new Date(nowValue || Date.now());
 
   const apiCache = mockCache(cache);
   const access = accessMock("PostLogin");
@@ -97,8 +101,7 @@ export function postLogin({
   const authentication = authenticationMock("PostLogin", { userId: userValue.user_id });
   const idToken = idTokenMock("PostLogin");
   const multifactor = multifactorMock("PostLogin");
-
-  const now = new Date(nowValue || Date.now());
+  const redirect = redirectMock("PostLogin", { now, request: requestValue, user: userValue });
 
   const state: PostLoginState = {
     user: userValue,
@@ -142,7 +145,7 @@ export function postLogin({
     validation: {
       error: null,
     },
-    redirect: null,
+    redirect: redirect.state,
   };
 
   const samlResponse = {
@@ -192,94 +195,8 @@ export function postLogin({
       return multifactor.build(api);
     },
 
-    redirect: {
-      encodeToken: ({ expiresInSeconds, payload, secret }) => {
-        expiresInSeconds = expiresInSeconds ?? 900;
-
-        const claims = {
-          iss: requestValue.hostname,
-          iat: Math.floor(now.getTime() / 1000),
-          exp: Math.floor((now.getTime() + expiresInSeconds * 1000) / 1000),
-          sub: userValue.user_id,
-          ip: requestValue.ip,
-          ...payload,
-        };
-
-        return encodeHS256JWT({ secret, claims });
-      },
-
-      sendUserTo: (urlString, options) => {
-        const url = new URL(urlString);
-
-        if (options?.query) {
-          for (const [key, value] of Object.entries(options.query)) {
-            url.searchParams.append(key, value);
-          }
-        }
-
-        const queryParams = Object.fromEntries(url.searchParams.entries());
-
-        state.redirect = { url, queryParams };
-
-        return api;
-      },
-
-      validateToken: ({ tokenParameterName, secret }) => {
-        tokenParameterName = tokenParameterName ?? "session_token";
-        const params = { ...requestValue.query, ...requestValue.body };
-
-        const tokenValue = params[tokenParameterName];
-
-        ok(
-          tokenParameterName in params,
-          `There is no parameter called '${tokenParameterName}' available in either the POST body or query string.`
-        );
-
-        const [rawHeader, rawClaims, signature] = String(tokenValue).split(".");
-
-        const verify = (condition: boolean, message: string) => {
-          ok(condition, `The session token is invalid: ${message}`);
-        };
-
-        const [header, claims] = [rawHeader, rawClaims].map((part) =>
-          JSON.parse(Buffer.from(part, "base64url").toString())
-        );
-
-        verify(
-          claims.state === params.state,
-          "State in the token does not match the /continue state."
-        );
-
-        const expectedSignature = signHS256({
-          secret,
-          body: `${rawHeader}.${rawClaims}`,
-        });
-
-        verify(signature === expectedSignature, "Failed signature validation");
-
-        const expectedClaims = ["sub", "iss", "exp", "iat"];
-
-        for (const claim of expectedClaims) {
-          verify(claim in claims, "Missing or invalid standard claims");
-        }
-
-        verify(
-          header.typ?.toUpperCase() === "JWT",
-          "Unexpected token payload type"
-        );
-
-        verify(
-          claims.sub === userValue.user_id,
-          "The sub claim does not match the user_id."
-        );
-
-        verify(
-          claims.exp > Math.floor(now.getTime() / 1000),
-          "Token has expired."
-        );
-
-        return claims as Record<string, unknown>;
-      },
+    get redirect() {
+      return redirect.build(api);
     },
 
     rules: {
