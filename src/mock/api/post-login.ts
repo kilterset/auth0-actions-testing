@@ -13,6 +13,7 @@ import { redirectMock } from "./redirect";
 import { userMock } from "./user";
 import { samlResponseMock } from "./saml-response";
 import { validationMock } from "./validation";
+import { rulesMock } from "./rules";
 
 export interface PostLoginOptions {
   user?: Auth0.User;
@@ -108,6 +109,7 @@ export function postLogin({
   const userApiMock = userMock("PostLogin", { user: userValue });
   const samlResponse = samlResponseMock("PostLogin");
   const validation = validationMock("PostLogin");
+  const rules = rulesMock("PostLogin", { executedRules });
 
   const state: PostLoginState = {
     user: userApiMock.state,
@@ -149,10 +151,8 @@ export function postLogin({
       return redirect.build(api);
     },
 
-    rules: {
-      wasExecuted: (ruleId) => {
-        return executedRules.includes(ruleId);
-      },
+    get rules() {
+      return rules.build(api);
     },
 
     get samlResponse() {
