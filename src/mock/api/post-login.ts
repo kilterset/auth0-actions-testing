@@ -6,6 +6,7 @@ import { ok } from "node:assert";
 import { encodeHS256JWT, signHS256 } from "../../jwt/hs256";
 import { accessTokenMock } from "./access-token";
 import { accessMock } from "./access";
+import { authenticationMock, FactorList } from "./authentication";
 
 export interface PostLoginOptions {
   user?: Auth0.User;
@@ -45,14 +46,8 @@ interface SamlResponseState {
   signingCert?: string;
 }
 
-interface FactorList {
-  allOptions: Factor[];
-  default: Factor | undefined;
-}
-
 export interface PostLoginState {
   user: Auth0.User;
-  primaryUserId: string;
   cache: Auth0.API.Cache;
   access: { denied: false } | { denied: { reason: string } };
   accessToken: {
@@ -60,6 +55,7 @@ export interface PostLoginState {
     scopes: string[];
   };
   authentication: {
+    primaryUserId: string;
     challenge: FactorList | false;
     enrollment: FactorList | false;
     newlyRecordedMethods: string[];
@@ -89,27 +85,22 @@ export function postLogin({
   executedRules: optionallyExecutedRules,
   now: nowValue,
 }: PostLoginOptions = {}) {
+  const userValue = user ?? mockUser();
+  const executedRules = optionallyExecutedRules ?? [];
+  const requestValue = request ?? mockRequest();
+
   const apiCache = mockCache(cache);
   const access = accessMock("PostLogin");
   const accessToken = accessTokenMock("PostLogin");
-  const executedRules = optionallyExecutedRules ?? [];
-  const userValue = user ?? mockUser();
-  const requestValue = request ?? mockRequest();
+  const authentication = authenticationMock("PostLogin", { userId: userValue.user_id });
 
   const now = new Date(nowValue || Date.now());
 
-  let numCallsToSetPrimaryUser = 0;
-
   const state: PostLoginState = {
     user: userValue,
-    primaryUserId: userValue.user_id,
     access: access.state,
     accessToken: accessToken.state,
-    authentication: {
-      challenge: false,
-      enrollment: false,
-      newlyRecordedMethods: [],
-    },
+    authentication: authentication.state,
     cache: apiCache,
     idToken: {
       claims: {},
@@ -187,50 +178,8 @@ export function postLogin({
       return accessToken.build(api);
     },
 
-    authentication: {
-      challengeWith: (factor, options) => {
-        const additionalFactors = options?.additionalFactors ?? [];
-
-        state.authentication.challenge = {
-          allOptions: [factor, ...additionalFactors],
-          default: factor,
-        };
-      },
-      challengeWithAny(factors) {
-        state.authentication.challenge = {
-          allOptions: factors,
-          default: undefined,
-        };
-      },
-      enrollWith(factor, options) {
-        const additionalFactors = options?.additionalFactors ?? [];
-
-        state.authentication.enrollment = {
-          allOptions: [factor, ...additionalFactors],
-          default: factor,
-        };
-      },
-      enrollWithAny(factors) {
-        state.authentication.enrollment = {
-          allOptions: factors,
-          default: undefined,
-        };
-      },
-      setPrimaryUser: (primaryUserId) => {
-        numCallsToSetPrimaryUser++;
-
-        if (numCallsToSetPrimaryUser > 1) {
-          throw new Error(
-            "`authentication.setPrimaryUser` can only be set once per transaction"
-          );
-        }
-
-        state.primaryUserId = primaryUserId;
-      },
-      recordMethod: (providerUrl) => {
-        state.authentication.newlyRecordedMethods.push(providerUrl);
-        return api;
-      },
+    get authentication() {
+      return authentication.build(api);
     },
 
     cache: apiCache,

@@ -379,14 +379,14 @@ test("PostLogin API", async (t) => {
       await t.test("can change the primary user ID", async (t) => {
         const { implementation: api, state } = postLogin();
         const originalUserId = state.user.user_id;
-        strictEqual(state.primaryUserId, originalUserId);
+        strictEqual(state.authentication.primaryUserId, originalUserId);
 
         strictEqual(
           api.authentication.setPrimaryUser("new-primary-user-id"),
           undefined
         );
 
-        strictEqual(state.primaryUserId, "new-primary-user-id");
+        strictEqual(state.authentication.primaryUserId, "new-primary-user-id");
         strictEqual(state.user.user_id, originalUserId);
       });
 
