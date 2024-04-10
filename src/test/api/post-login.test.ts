@@ -10,10 +10,8 @@ test("PostLogin API", async (t) => {
 
     strictEqual(api.access.deny("Only cool kids allowed"), api);
 
-    deepStrictEqual(state.access, {
-      denied: true,
-      reason: "Only cool kids allowed",
-    });
+    ok(state.access.denied, "Expected access to be denied");
+    strictEqual(state.access.denied.reason, "Only cool kids allowed");
   });
 
   await t.test("accessToken", async (t) => {
