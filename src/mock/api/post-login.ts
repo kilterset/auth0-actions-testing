@@ -11,6 +11,7 @@ import { idTokenMock } from "./id-token";
 import { multifactorMock } from "./multifactor";
 import { redirectMock } from "./redirect";
 import { userMock } from "./user";
+import { samlResponseMock } from "./saml-response";
 
 export interface PostLoginOptions {
   user?: Auth0.User;
@@ -104,6 +105,7 @@ export function postLogin({
   const multifactor = multifactorMock("PostLogin");
   const redirect = redirectMock("PostLogin", { now, request: requestValue, user: userValue });
   const userApiMock = userMock("PostLogin", { user: userValue });
+  const samlResponse = samlResponseMock("PostLogin");
 
   const state: PostLoginState = {
     user: userApiMock.state,
@@ -113,66 +115,12 @@ export function postLogin({
     cache: apiCache,
     idToken: idToken.state,
     multifactor: multifactor.state,
-    samlResponse: {
-      // Custom attributes
-      attributes: {},
-
-      // Default literal values
-      createUpnClaim: true,
-      passthroughClaimsWithNoMapping: true,
-      mapUnknownClaimsAsIs: false,
-      mapIdentities: true,
-      signResponse: false,
-      includeAttributeNameFormat: true,
-      typedAttributes: true,
-      lifetimeInSeconds: 3600,
-
-      nameIdentifierFormat:
-        "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
-
-      nameIdentifierProbes: [
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
-      ],
-
-      authnContextClassRef:
-        "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified",
-
-      // Default dynamic values
-      audience: "default-audience",
-      recipient: "default-recipient",
-      destination: "default-destination",
-    },
+    samlResponse: samlResponse.state,
     validation: {
       error: null,
     },
     redirect: redirect.state,
   };
-
-  const samlResponse = {
-    setAttribute: (attribute: string, value: SamlAttributeValue) => {
-      state.samlResponse.attributes[attribute] = value;
-    },
-  } as Auth0.API.PostLogin["samlResponse"];
-
-  for (const property in state.samlResponse) {
-    if (state.samlResponse.hasOwnProperty(property)) {
-      const key = property as keyof SamlResponseState;
-
-      if (key === "attributes") {
-        continue;
-      }
-
-      const setter = `set${key[0].toUpperCase()}${key.slice(
-        1
-      )}` as keyof Auth0.API.PostLogin["samlResponse"];
-
-      samlResponse[setter] = (value: unknown) => {
-        state.samlResponse[key] = value as never;
-      };
-    }
-  }
 
   const api: Auth0.API.PostLogin = {
     get access() {
@@ -207,7 +155,9 @@ export function postLogin({
       },
     },
 
-    samlResponse,
+    get samlResponse() {
+      return samlResponse.build(api);
+    },
 
     get user() {
       return userApiMock.build(api);
