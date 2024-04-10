@@ -10,6 +10,7 @@ import { authenticationMock, FactorList } from "./authentication";
 import { idTokenMock } from "./id-token";
 import { multifactorMock } from "./multifactor";
 import { redirectMock } from "./redirect";
+import { userMock } from "./user";
 
 export interface PostLoginOptions {
   user?: Auth0.User;
@@ -102,9 +103,10 @@ export function postLogin({
   const idToken = idTokenMock("PostLogin");
   const multifactor = multifactorMock("PostLogin");
   const redirect = redirectMock("PostLogin", { now, request: requestValue, user: userValue });
+  const userApiMock = userMock("PostLogin", { user: userValue });
 
   const state: PostLoginState = {
-    user: userValue,
+    user: userApiMock.state,
     access: access.state,
     accessToken: accessToken.state,
     authentication: authentication.state,
@@ -207,17 +209,8 @@ export function postLogin({
 
     samlResponse,
 
-    user: {
-      setAppMetadata: (key, value) => {
-        state.user.app_metadata ??= {};
-        state.user.app_metadata[key] = value;
-        return api;
-      },
-      setUserMetadata: (key, value) => {
-        state.user.user_metadata ??= {};
-        state.user.user_metadata[key] = value;
-        return api;
-      },
+    get user() {
+      return userApiMock.build(api);
     },
 
     validation: {
