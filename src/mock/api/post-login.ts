@@ -100,10 +100,16 @@ export function postLogin({
   const apiCache = mockCache(cache);
   const access = accessMock("PostLogin");
   const accessToken = accessTokenMock("PostLogin");
-  const authentication = authenticationMock("PostLogin", { userId: userValue.user_id });
+  const authentication = authenticationMock("PostLogin", {
+    userId: userValue.user_id,
+  });
   const idToken = idTokenMock("PostLogin");
   const multifactor = multifactorMock("PostLogin");
-  const redirect = redirectMock("PostLogin", { now, request: requestValue, user: userValue });
+  const redirect = redirectMock("PostLogin", {
+    now,
+    request: requestValue,
+    user: userValue,
+  });
   const userApiMock = userMock("PostLogin", { user: userValue });
   const samlResponse = samlResponseMock("PostLogin");
   const validation = validationMock("PostLogin");
@@ -124,7 +130,7 @@ export function postLogin({
 
   const api: Auth0.API.PostLogin = {
     get access() {
-      return access.build(api)
+      return access.build(api);
     },
 
     get accessToken() {

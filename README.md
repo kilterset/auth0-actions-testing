@@ -5,6 +5,8 @@
 
 Allows you to develop and test Auth0 Actions and Okta CIC Actions locally. This project is not affilliated with Auth0.
 
+**Pre-release:** The API and type definitions may change before a `1.0` release.
+
 This library provides you with the setup to test complex actions. Customise test event payloads using realistic, randomized data. Test Action behaviour such as `fetch`ing an external service, providing event secrets, setting metadata, caching data, denying access, redirecting users mid-login, and more. Provides type-hinting to your editor.
 
 The following [Flows](https://auth0.com/docs/customize/actions/flows-and-triggers) are supported:
