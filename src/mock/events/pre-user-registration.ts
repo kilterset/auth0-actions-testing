@@ -2,7 +2,6 @@ import { define } from "../define";
 import Auth0, { Connection } from "../../types";
 import { user } from "../user";
 import { request } from "../request";
-import { authentication } from "../authentication";
 import { transaction } from "../transaction";
 import { session } from "../session";
 import { connection } from "../connection";
@@ -47,7 +46,6 @@ export const preUserRegistration = define<Auth0.Events.PreUserRegistration>(
 
     return {
       transaction: transactionValue,
-      authentication: authentication(),
       authorization: {
         roles: [],
       },
