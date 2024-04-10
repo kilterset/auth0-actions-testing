@@ -1,6 +1,5 @@
 import Auth0 from "../../types";
 import { cache as mockCache } from "./cache";
-import { request as mockRequest } from "../request";
 import { accessTokenMock } from "./access-token";
 import { accessMock } from "./access";
 
