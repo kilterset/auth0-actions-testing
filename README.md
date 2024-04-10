@@ -17,8 +17,7 @@ The following [Flows](https://auth0.com/docs/customize/actions/flows-and-trigger
 | Pre User Registration  | ✓ pending release |
 | Post User Registration | ✓ pending release |
 | Post Change Password   | ✓ pending release |
-| Send Phone Message     | planned           |
-
+| Send Phone Message     | ✓ pending release |
 
 ## Getting started
 
