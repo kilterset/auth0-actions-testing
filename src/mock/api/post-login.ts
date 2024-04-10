@@ -8,6 +8,7 @@ import { accessTokenMock } from "./access-token";
 import { accessMock } from "./access";
 import { authenticationMock, FactorList } from "./authentication";
 import { idTokenMock } from "./id-token";
+import { multifactorMock } from "./multifactor";
 
 export interface PostLoginOptions {
   user?: Auth0.User;
@@ -95,6 +96,7 @@ export function postLogin({
   const accessToken = accessTokenMock("PostLogin");
   const authentication = authenticationMock("PostLogin", { userId: userValue.user_id });
   const idToken = idTokenMock("PostLogin");
+  const multifactor = multifactorMock("PostLogin");
 
   const now = new Date(nowValue || Date.now());
 
@@ -105,9 +107,7 @@ export function postLogin({
     authentication: authentication.state,
     cache: apiCache,
     idToken: idToken.state,
-    multifactor: {
-      enabled: false,
-    },
+    multifactor: multifactor.state,
     samlResponse: {
       // Custom attributes
       attributes: {},
@@ -188,11 +188,8 @@ export function postLogin({
       return idToken.build(api);
     },
 
-    multifactor: {
-      enable: (provider, options) => {
-        state.multifactor.enabled = { provider, options };
-        return api;
-      },
+    get multifactor() {
+      return multifactor.build(api);
     },
 
     redirect: {
