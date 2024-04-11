@@ -1,6 +1,6 @@
 {
   "name": "@kilterset/auth0-actions-testing",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Test and develop Auth0 Actions or Okta CIC Actions locally.",
   "repository": "https://github.com/kilterset/auth0-actions-testing",
   "homepage": "https://github.com/kilterset/auth0-actions-testing#readme",
