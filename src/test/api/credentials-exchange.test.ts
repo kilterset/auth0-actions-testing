@@ -14,9 +14,10 @@ test("Credentials Exchange API", async (t) => {
     );
 
     deepStrictEqual(state.access, {
-      denied: true,
-      code: "invalid_request",
-      reason: "Only cool kids allowed",
+      denied: {
+        code: "invalid_request",
+        reason: "Only cool kids allowed",
+      }
     });
   });
 

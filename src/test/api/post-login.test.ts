@@ -10,10 +10,8 @@ test("PostLogin API", async (t) => {
 
     strictEqual(api.access.deny("Only cool kids allowed"), api);
 
-    deepStrictEqual(state.access, {
-      denied: true,
-      reason: "Only cool kids allowed",
-    });
+    ok(state.access.denied, "Expected access to be denied");
+    strictEqual(state.access.denied.reason, "Only cool kids allowed");
   });
 
   await t.test("accessToken", async (t) => {
@@ -381,14 +379,14 @@ test("PostLogin API", async (t) => {
       await t.test("can change the primary user ID", async (t) => {
         const { implementation: api, state } = postLogin();
         const originalUserId = state.user.user_id;
-        strictEqual(state.primaryUserId, originalUserId);
+        strictEqual(state.authentication.primaryUserId, originalUserId);
 
         strictEqual(
           api.authentication.setPrimaryUser("new-primary-user-id"),
           undefined
         );
 
-        strictEqual(state.primaryUserId, "new-primary-user-id");
+        strictEqual(state.authentication.primaryUserId, "new-primary-user-id");
         strictEqual(state.user.user_id, originalUserId);
       });
 
@@ -426,9 +424,9 @@ test("PostLogin API", async (t) => {
 
         const { redirect } = state;
 
-        ok(redirect, "redirect not set");
-        deepStrictEqual(redirect.queryParams, {}, "query should be empty");
-        strictEqual(redirect.url.href, "https://example.com/r", "url mismatch");
+        ok(redirect.target, "redirect not set");
+        deepStrictEqual(redirect.target.queryParams, {}, "query should be empty");
+        strictEqual(redirect.target.url.href, "https://example.com/r", "url mismatch");
       });
 
       await t.test("redirect with consolidated GET parameters", async (t) => {
@@ -443,16 +441,16 @@ test("PostLogin API", async (t) => {
 
         const { redirect } = state;
 
-        ok(redirect, "redirect not set");
+        ok(redirect.target, "redirect not set");
 
         deepStrictEqual(
-          redirect.queryParams,
+          redirect.target.queryParams,
           { bread: "rye", filling: "cheese", spread: "butter" },
           "unexpected query"
         );
 
         strictEqual(
-          redirect.url.href,
+          redirect.target.url.href,
           "https://example.com/?bread=rye&filling=cheese&spread=butter",
           "url mismatch"
         );

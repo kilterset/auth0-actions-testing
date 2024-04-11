@@ -21,26 +21,26 @@ test("redirect and continue with signed data", async (t) => {
     const { redirect } = action;
 
     strict(
-      redirect.queryParams.theme,
+      redirect.target.queryParams.theme,
       "spiffy",
       "Unexpected value for `theme` query parameter"
     );
 
     strictEqual(
       // You can also use redirect.url.href to get the full URL as a string
-      redirect.url.origin,
+      redirect.target.url.origin,
       "https://example.com",
       "Unexpected redirect URL origin"
     );
 
     strictEqual(
-      redirect.url.pathname,
+      redirect.target.url.pathname,
       "/sandwich-preferences",
       "Unexpected redirect URL path"
     );
 
     // Test the signed JWT data payload
-    const { session_token } = redirect.queryParams;
+    const { session_token } = redirect.target.queryParams;
 
     const decoded = jwt.decodeJWTPayload(session_token);
 
