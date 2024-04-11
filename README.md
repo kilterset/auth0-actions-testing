@@ -16,7 +16,7 @@ The following [Flows](https://auth0.com/docs/customize/actions/flows-and-trigger
 | Password Reset         | ✓ pending release |
 | Pre User Registration  | ✓ pending release |
 | Post User Registration | ✓ pending release |
-| Post Change Password   | planned           |
+| Post Change Password   | ✓ pending release |
 | Send Phone Message     | planned           |
 
 
