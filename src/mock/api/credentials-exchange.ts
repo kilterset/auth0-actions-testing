@@ -20,7 +20,7 @@ export function credentialsExchange({
 }: CredentialsExchangeOptions = {}) {
   const apiCache = mockCache(cache);
   const access = accessMock("CredentialsExchange");
-  const accessToken = accessTokenMock("CredentialsExchange")
+  const accessToken = accessTokenMock("CredentialsExchange");
 
   const state: CredentialsExchangeState = {
     access: access.state,

@@ -7,11 +7,8 @@ import { encodeHS256JWT } from "../../jwt/hs256";
 test("PostLogin API", async (t) => {
   await t.test("access", async (t) => {
     const { implementation: api, state } = postLogin();
-
     strictEqual(api.access.deny("Only cool kids allowed"), api);
-
-    ok(state.access.denied, "Expected access to be denied");
-    strictEqual(state.access.denied.reason, "Only cool kids allowed");
+    deepStrictEqual(state.access.denied, { reason: "Only cool kids allowed" });
   });
 
   await t.test("accessToken", async (t) => {
@@ -425,8 +422,16 @@ test("PostLogin API", async (t) => {
         const { redirect } = state;
 
         ok(redirect.target, "redirect not set");
-        deepStrictEqual(redirect.target.queryParams, {}, "query should be empty");
-        strictEqual(redirect.target.url.href, "https://example.com/r", "url mismatch");
+        deepStrictEqual(
+          redirect.target.queryParams,
+          {},
+          "query should be empty"
+        );
+        strictEqual(
+          redirect.target.url.href,
+          "https://example.com/r",
+          "url mismatch"
+        );
       });
 
       await t.test("redirect with consolidated GET parameters", async (t) => {

@@ -1,5 +1,5 @@
 const test = require("node:test");
-const { ok, strictEqual } = require("node:assert");
+const { ok, deepStrictEqual } = require("node:assert");
 const { onExecuteCredentialsExchange } = require("./geo-filter");
 const { nodeTestRunner } = require("@kilterset/auth0-actions-testing");
 
@@ -15,16 +15,13 @@ test("Filter access based on continent code", async (t) => {
 
     ok(action.access.denied, "Expected access to be denied");
 
-    strictEqual(
-      action.access.denied.code,
-      "invalid_request",
-      "Unexpected denial code"
-    );
-
-    strictEqual(
-      action.access.denied.reason,
-      "Access from North America is not allowed.",
-      "Unexpected denial reason"
+    deepStrictEqual(
+      action.access.denied,
+      {
+        code: "invalid_request",
+        reason: "Access from North America is not allowed.",
+      },
+      "Unexpected denial"
     );
   });
 
