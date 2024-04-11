@@ -9,15 +9,15 @@ This library provides you with the setup to test complex actions. Customise test
 
 The following [Flows](https://auth0.com/docs/customize/actions/flows-and-triggers) are supported:
 
-| Flow                   | Support |
-| ---------------------- | ------- |
-| Login                  | ✓       |
-| Machine to Machine     | ✓       |
-| Password Reset         | ✓       |
-| Pre User Registration  | ✓       |
-| Post User Registration | planned |
-| Post Change Password   | planned |
-| Send Phone Message     | planned |
+| Flow                   | Support           |
+| ---------------------- | ----------------- |
+| Login                  | ✓ from v0.1.0     |
+| Machine to Machine     | ✓ pending release |
+| Password Reset         | ✓ pending release |
+| Pre User Registration  | ✓ pending release |
+| Post User Registration | ✓ pending release |
+| Post Change Password   | planned           |
+| Send Phone Message     | planned           |
 
 
 ## Getting started

@@ -13,7 +13,7 @@ import { identity } from "../identity";
 
 export const postChallenge = define<Auth0.Events.PostChallenge>(
   ({ params }) => {
-    const tenantId = params.tenant?.id || chance.n(chance.word, 2).join("-");
+    const tenantId = params.tenant?.id || chance.auth0().tenantId();
     const hostname = params.request?.hostname || `${tenantId}.auth0.com`;
 
     const connectionValue = params.connection

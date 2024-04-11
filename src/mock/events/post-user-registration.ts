@@ -3,15 +3,12 @@ import Auth0, { Connection } from "../../types";
 import { user } from "../user";
 import { request } from "../request";
 import { transaction } from "../transaction";
-import { session } from "../session";
 import { connection } from "../connection";
-import { organization } from "../organization";
-import { client } from "../client";
 import { chance } from "../chance";
 import { identity } from "../identity";
 
-export const preUserRegistration = define<Auth0.Events.PreUserRegistration>(
-  ({ params }) => {
+export const postUserRegistration = define<Auth0.Events.PostUserRegistration>(
+  ({ params }): Auth0.Events.PostUserRegistration => {
     const tenantId = params.tenant?.id || chance.auth0().tenantId();
     const hostname = params.request?.hostname || `${tenantId}.auth0.com`;
 
@@ -46,21 +43,9 @@ export const preUserRegistration = define<Auth0.Events.PreUserRegistration>(
 
     return {
       transaction: transactionValue,
-      authorization: {
-        roles: [],
-      },
       connection: connectionValue,
-      organization: organization(),
-      resource_server: {
-        identifier: `https://${hostname}/userinfo`,
-      },
       tenant: { id: tenantId },
-      session: session({}, { ip: requestValue.ip, asn: requestValue.asn }),
-      client: client(),
       request: requestValue,
-      stats: {
-        logins_count: chance.integer({ min: 0, max: 1_000 }),
-      },
       user: userValue,
       secrets: {},
     };
