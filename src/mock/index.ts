@@ -3,6 +3,7 @@ export * from "./client";
 export * from "./connection";
 export * from "./identity";
 export * from "./organization";
+export * from "./phone-message-options";
 export * from "./request";
 export * from "./risk-assessment";
 export * from "./session";
