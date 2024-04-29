@@ -3,6 +3,7 @@ export * from "./api/credentials-exchange";
 export * from "./authentication";
 export * from "./client";
 export * from "./connection";
+export * from "./factor";
 export * from "./identity";
 export * from "./organization";
 export * from "./request";
