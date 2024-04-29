@@ -11,7 +11,7 @@ interface RedirectMockOptions {
 interface EncodeTokenOptions {
   expiresInSeconds?: number | undefined;
   payload: {
-      [key: string]: unknown;
+    [key: string]: unknown;
   };
   secret: string;
 }
@@ -25,15 +25,23 @@ interface ValidateTokenOptions {
   secret: string;
 }
 
-export function redirectMock(flow: string, { now: nowValue, request, user }: RedirectMockOptions) {
+export function redirectMock(
+  flow: string,
+  { now: nowValue, request, user }: RedirectMockOptions
+) {
   const now = new Date(nowValue || Date.now());
 
-  const state = {
-    target: null as null | { url: URL; queryParams: Record<string, string> },
+  let state = null as null | {
+    url: URL;
+    queryParams: Record<string, string>;
   };
 
   const build = <T>(api: T) => ({
-    encodeToken: ({ expiresInSeconds, payload, secret }: EncodeTokenOptions) => {
+    encodeToken: ({
+      expiresInSeconds,
+      payload,
+      secret,
+    }: EncodeTokenOptions) => {
       expiresInSeconds = expiresInSeconds ?? 900;
 
       const claims = {
@@ -59,7 +67,7 @@ export function redirectMock(flow: string, { now: nowValue, request, user }: Red
 
       const queryParams = Object.fromEntries(url.searchParams.entries());
 
-      state.target = { url, queryParams };
+      state = { url, queryParams };
 
       return api;
     },
@@ -122,5 +130,5 @@ export function redirectMock(flow: string, { now: nowValue, request, user }: Red
     },
   });
 
-  return { state, build };
+  return { state: () => state, build };
 }

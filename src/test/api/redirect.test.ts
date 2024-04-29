@@ -10,12 +10,19 @@ test("redirect", async (t) => {
   await t.test("encodeToken", async (t) => {
     const now = new Date("2024-01-01T00:00:00.000Z");
     const nowUnixTimestamp = now.getTime() / 1000;
+    const user = mockUser({ user_id: "auth0|8150" });
+
     const request = mockRequest({
       hostname: "example.com",
       ip: "d666:171e:e7a4:1aa3:359a:a317:9f53:ee97",
     });
-    const user = mockUser({ user_id: "auth0|8150" });
-    const { build, state } = redirectMock("Another Flow", { now, request, user });
+
+    const { build, state } = redirectMock("Another Flow", {
+      now,
+      request,
+      user,
+    });
+
     const api = build(baseApi);
 
     const token = api.encodeToken({
@@ -52,7 +59,7 @@ test("redirect", async (t) => {
       signature,
       "ZlLKLk7uJzDjD0nt2a08QiWMY1EPnhFIuc8WsSZPBvQ",
       "invalid signature"
-    ); 
+    );
   });
 
   await t.test("sendUserTo", async (t) => {
@@ -60,21 +67,29 @@ test("redirect", async (t) => {
       const now = new Date();
       const request = mockRequest();
       const user = mockUser();
-      const { build, state } = redirectMock("Another Flow", { now, request, user });
+      const { build, state } = redirectMock("Another Flow", {
+        now,
+        request,
+        user,
+      });
       const api = build(baseApi);
 
-      strictEqual(api.sendUserTo("https://example.com/r"), baseApi, );
+      strictEqual(api.sendUserTo("https://example.com/r"), baseApi);
 
-      ok(state.target, "redirect not set");
-      deepStrictEqual(state.target.queryParams, {}, "query should be empty");
-      strictEqual(state.target.url.href, "https://example.com/r", "url mismatch");
+      ok(state, "redirect not set");
+      deepStrictEqual(state.queryParams, {}, "query should be empty");
+      strictEqual(state.url.href, "https://example.com/r", "url mismatch");
     });
 
     await t.test("redirect with consolidated GET parameters", async (t) => {
       const now = new Date();
       const request = mockRequest();
       const user = mockUser();
-      const { build, state } = redirectMock("Another Flow", { now, request, user });
+      const { build, state } = redirectMock("Another Flow", {
+        now,
+        request,
+        user,
+      });
       const api = build(baseApi);
 
       strictEqual(
@@ -84,16 +99,16 @@ test("redirect", async (t) => {
         baseApi
       );
 
-      ok(state.target, "redirect not set");
+      ok(state, "redirect not set");
 
       deepStrictEqual(
-        state.target.queryParams,
+        state.queryParams,
         { bread: "rye", filling: "cheese", spread: "butter" },
         "unexpected query"
       );
 
       strictEqual(
-        state.target.url.href,
+        state.url.href,
         "https://example.com/?bread=rye&filling=cheese&spread=butter",
         "url mismatch"
       );
@@ -140,7 +155,11 @@ test("redirect", async (t) => {
           state: VALID_STATE,
         },
       });
-      const { build, state } = redirectMock("Another Flow", { now, request, user });
+      const { build, state } = redirectMock("Another Flow", {
+        now,
+        request,
+        user,
+      });
       const api = build(baseApi);
 
       const payload = api.validateToken({ secret: VALID_SECRET });
@@ -157,7 +176,11 @@ test("redirect", async (t) => {
           state: VALID_STATE,
         },
       });
-      const { build, state } = redirectMock("Another Flow", { now, request, user });
+      const { build, state } = redirectMock("Another Flow", {
+        now,
+        request,
+        user,
+      });
       const api = build(baseApi);
 
       const payload = api.validateToken({ secret: VALID_SECRET });
@@ -174,7 +197,11 @@ test("redirect", async (t) => {
           state: VALID_STATE,
         },
       });
-      const { build, state } = redirectMock("Another Flow", { now, request, user });
+      const { build, state } = redirectMock("Another Flow", {
+        now,
+        request,
+        user,
+      });
       const api = build(baseApi);
 
       const payload = api.validateToken({
@@ -214,13 +241,13 @@ test("redirect", async (t) => {
     await t.test("throws error if expired", async (t) => {
       const { user, request } = VALID_CONTEXT;
       const now = TOKEN_PAYLOAD.exp * 1000; // exactly the expiry time
-      const { build, state } = redirectMock("Another Flow", { ...VALID_CONTEXT, now });
+      const { build, state } = redirectMock("Another Flow", {
+        ...VALID_CONTEXT,
+        now,
+      });
       const api = build(baseApi);
 
-      throws(
-        () => api.validateToken({ secret: VALID_SECRET }),
-        /expired/i
-      );
+      throws(() => api.validateToken({ secret: VALID_SECRET }), /expired/i);
     });
 
     await t.test("throws error if signature is invalid", async (t) => {
@@ -232,10 +259,7 @@ test("redirect", async (t) => {
       const { build, state } = redirectMock("Another Flow", context);
       const api = build(baseApi);
 
-      throws(
-        () => api.validateToken({ secret: VALID_SECRET }),
-        /signature/i
-      );
+      throws(() => api.validateToken({ secret: VALID_SECRET }), /signature/i);
     });
 
     for (const claim of ["sub", "iss", "iat", "exp"]) {

@@ -1,5 +1,5 @@
 const test = require("node:test");
-const { strictEqual, deepStrictEqual, ok, strict } = require("node:assert");
+const { strictEqual, deepStrictEqual, strict } = require("node:assert");
 const { onExecutePostLogin, onContinuePostLogin } = require("./redirect");
 const { nodeTestRunner, jwt } = require("@kilterset/auth0-actions-testing");
 
@@ -21,26 +21,26 @@ test("redirect and continue with signed data", async (t) => {
     const { redirect } = action;
 
     strict(
-      redirect.target.queryParams.theme,
+      redirect.queryParams.theme,
       "spiffy",
       "Unexpected value for `theme` query parameter"
     );
 
     strictEqual(
       // You can also use redirect.url.href to get the full URL as a string
-      redirect.target.url.origin,
+      redirect.url.origin,
       "https://example.com",
       "Unexpected redirect URL origin"
     );
 
     strictEqual(
-      redirect.target.url.pathname,
+      redirect.url.pathname,
       "/sandwich-preferences",
       "Unexpected redirect URL path"
     );
 
     // Test the signed JWT data payload
-    const { session_token } = redirect.target.queryParams;
+    const { session_token } = redirect.queryParams;
 
     const decoded = jwt.decodeJWTPayload(session_token);
 

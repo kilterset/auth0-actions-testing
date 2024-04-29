@@ -80,9 +80,7 @@ export interface PostLoginState {
   validation: {
     error: { code: string; message: string } | null;
   };
-  redirect: {
-    target: { url: URL; queryParams: Record<string, string> } | null;
-  };
+  redirect: { url: URL; queryParams: Record<string, string> } | null;
 }
 
 export function postLogin({
@@ -115,18 +113,37 @@ export function postLogin({
   const validation = validationMock("PostLogin");
   const rules = rulesMock("PostLogin", { executedRules });
 
-  const state: PostLoginState = {
-    user: userApiMock.state,
-    access: access.state,
-    accessToken: accessToken.state,
-    authentication: authentication.state,
-    cache: apiCache,
-    idToken: idToken.state,
-    multifactor: multifactor.state,
-    samlResponse: samlResponse.state,
-    validation: validation.state,
-    redirect: redirect.state,
-  };
+  const state = new Proxy(
+    {
+      user: userApiMock.state,
+      access: access.state,
+      accessToken: accessToken.state,
+      authentication: authentication.state,
+      cache: apiCache,
+      idToken: idToken.state,
+      multifactor: multifactor.state,
+      samlResponse: samlResponse.state,
+      validation: validation.state,
+      redirect: redirect.state,
+    },
+    {
+      get(target, prop) {
+        if (typeof prop !== "string") {
+          return;
+        }
+
+        if (prop in target) {
+          const value = target[prop as keyof typeof target];
+
+          if (typeof value === "function") {
+            return value();
+          } else {
+            return value;
+          }
+        }
+      },
+    }
+  ) as unknown as PostLoginState;
 
   const api: Auth0.API.PostLogin = {
     get access() {
