@@ -1,23 +1,20 @@
 const test = require("node:test");
 const { strictEqual, deepStrictEqual } = require("node:assert");
-const { onExecuteSendPhoneMessage } = require("./custom-send-phone-message");
+const { onExecutePostChangePassword } = require("./revoke-session");
 const { nodeTestRunner } = require("@kilterset/auth0-actions-testing");
 
-test("send phone message", async (t) => {
+test("post change password", async (t) => {
   const { auth0, fetchMock } = await nodeTestRunner.actionTestSetup(t);
 
-  await t.test("is handled by a custom API", async (t) => {
-    fetchMock.mock("https://sms-provider/send-sms", 200);
+  await t.test("revokes remote session", async (t) => {
+    fetchMock.mock("https://api.example/revoke-session", 200);
 
     const action = auth0.mock.actions.postChangePassword({
-      secrets: { API_BASE_URL: "https://sms-provider", API_SECRET: "shh" },
-      message_options: auth0.mock.phoneMessageOptions({
-        recipient: "+17762323",
-        text: "Here is your code",
-      }),
+      secrets: { API_BASE_URL: "https://api.example", API_SECRET: "shh" },
+      user: auth0.mock.user({ id: 42 }),
     });
 
-    await action.simulate(onExecuteSendPhoneMessage);
+    await action.simulate(onExecutePostChangePassword);
 
     const calls = fetchMock.calls();
 
@@ -25,7 +22,7 @@ test("send phone message", async (t) => {
 
     const [url, options] = calls[0];
 
-    strictEqual(url, "https://sms-provider/send-sms", "Unexpected URL");
+    strictEqual(url, "https://api.example/revoke-session", "Unexpected URL");
     strictEqual(options.method, "POST", "Unexpected request method");
 
     deepStrictEqual(
@@ -36,7 +33,7 @@ test("send phone message", async (t) => {
 
     deepStrictEqual(
       JSON.parse(options.body),
-      { phoneNumber: "+17762323", message: "Here is your code" },
+      { userId: 42 },
       "Unexpected body"
     );
   });

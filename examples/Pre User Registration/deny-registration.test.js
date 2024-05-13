@@ -1,8 +1,6 @@
 const test = require("node:test");
 const { deepStrictEqual, ok } = require("node:assert");
-const {
-  onExecutePreUserRegistration,
-} = require("./deny-pre-user-registration");
+const { onExecutePreUserRegistration } = require("./deny-registration");
 const { nodeTestRunner } = require("@kilterset/auth0-actions-testing");
 
 test("denies user registration", async (t) => {
