@@ -5,8 +5,6 @@
 
 Allows you to develop and test Auth0 Actions and Okta CIC Actions locally. This project is not affilliated with Auth0.
 
-**Pre-release:** The API and type definitions may change before a `1.0` release.
-
 This library provides you with the setup to test complex actions. Customise test event payloads using realistic, randomized data. Test Action behaviour such as `fetch`ing an external service, providing event secrets, setting metadata, caching data, denying access, redirecting users mid-login, and more. Provides type-hinting to your editor.
 
 The following [Flows](https://auth0.com/docs/customize/actions/flows-and-triggers) are supported:
@@ -70,8 +68,8 @@ Here's a simple Action which records a lucky number on the user's `app_metadata`
 // code.js
 exports.onExecutePostLogin = async (event, api) => {
   const diceRoll = Math.round(Math.random() * event.secrets.MAX_LUCKY_NUMBER);
-  api.user.setAppMetadata('lucky_number', diceRoll);
-}
+  api.user.setAppMetadata("lucky_number", diceRoll);
+};
 ```
 
 Let's create a test scenario for this:
@@ -124,7 +122,7 @@ test("Lucky Number", async (t) => {
 
     // Checking truthiness
     ok(
-      lucky_number >=0 && lucky_number <= 42,
+      lucky_number >= 0 && lucky_number <= 42,
       `Expected lucky number to be between 0 and 42 (got ${lucky_number})`
     );
   });
@@ -183,8 +181,8 @@ If the behaviour of your Action depends on a property of the event being a parti
 ```js
 const action = auth0.mock.actions.postLogin({
   user: auth0.mock.user({
-    user_id: 'an-explicit-id',
-    name: 'Barry'
+    user_id: "an-explicit-id",
+    name: "Barry",
   }),
 });
 ```
@@ -200,7 +198,7 @@ Testing is typically done by checking the state of the action after it's run. Fo
 ```js
 exports.onExecutePostLogin = async (event, api) => {
   api.access.deny("Nobody is allowed!");
-}
+};
 ```
 
 The test:
@@ -209,8 +207,8 @@ The test:
 const action = auth0.mock.actions.postLogin();
 await action.simulate(onExecutePostLogin);
 
-ok(action.access.denied, 'Expected access to be denied');
-match(action.access.denied.reason, /nobody is allowed/i, 'Unexpected message');
+ok(action.access.denied, "Expected access to be denied");
+match(action.access.denied.reason, /nobody is allowed/i, "Unexpected message");
 ```
 
 Take a look at [the examples directory](https://github.com/kilterset/auth0-actions-testing/tree/main/examples) or the type hinting on the `actions` object to learn which properties to assert against.

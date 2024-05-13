@@ -1,8 +1,6 @@
 const test = require("node:test");
 const { strictEqual, deepStrictEqual } = require("node:assert");
-const {
-  onExecutePostUserRegistration,
-} = require("./notify-slack-post-user-registration");
+const { onExecutePostUserRegistration } = require("./notify-slack");
 const { nodeTestRunner } = require("@kilterset/auth0-actions-testing");
 
 test("post user registration", async (t) => {

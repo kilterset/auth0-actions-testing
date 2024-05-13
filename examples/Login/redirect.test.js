@@ -1,5 +1,5 @@
 const test = require("node:test");
-const { strictEqual, deepStrictEqual, ok, strict } = require("node:assert");
+const { strictEqual, deepStrictEqual, strict } = require("node:assert");
 const { onExecutePostLogin, onContinuePostLogin } = require("./redirect");
 const { nodeTestRunner, jwt } = require("@kilterset/auth0-actions-testing");
 
