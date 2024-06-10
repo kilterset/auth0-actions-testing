@@ -9,7 +9,7 @@ Examples are organized into [Auth0 Flows](https://auth0.com/docs/customize/actio
 | Flow                   | Trigger                  | Export(s)                                           |
 | ---------------------- | ------------------------ | --------------------------------------------------- |
 | Login                  | `post-login`             | `onExecutePostLogin`, `onContinuePostLogin`         |
-| Machine to Machine     | `client-credentials`     | `onExecuteCredentialsExchange`                      |
+| Machine to Machine     | `credentials-exchange`   | `onExecuteCredentialsExchange`                      |
 | Password Reset         | `post-challenge`         | `onExecutePostChallenge`, `onContinuePostChallenge` |
 | Post User Registration | `post-user-registration` | `onExecutePreUserRegistration`                      |
 | Pre User Registration  | `pre-user-registration`  | `onExecutePreUserRegistration`                      |
