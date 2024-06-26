@@ -7,11 +7,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    # Uncomment the lines below if the package.json is located in a subdirectory
-    #
-    # defaults:
-    #   run:
-    #     working-directory: ./actions
+    # assuming your package.json is in the actions directory
+    defaults:
+      run:
+        working-directory: ./actions
 
     steps:
       - uses: actions/checkout@v4
@@ -19,4 +18,4 @@ jobs:
         with:
           cache: npm
       - run: npm ci
-      - run: npm test
+      - run: node --test
