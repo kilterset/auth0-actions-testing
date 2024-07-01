@@ -80,9 +80,7 @@ export interface PostLoginState {
   validation: {
     error: { code: string; message: string } | null;
   };
-  redirect: {
-    target: { url: URL; queryParams: Record<string, string> } | null;
-  };
+  redirect: { url: URL; queryParams: Record<string, string> } | null;
 }
 
 export function postLogin({
@@ -125,7 +123,9 @@ export function postLogin({
     multifactor: multifactor.state,
     samlResponse: samlResponse.state,
     validation: validation.state,
-    redirect: redirect.state,
+    get redirect() {
+      return redirect.state.target;
+    },
   };
 
   const api: Auth0.API.PostLogin = {
