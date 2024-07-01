@@ -1,7 +1,7 @@
 import { User } from "../../types";
 
-export function userMock(flow: string, { user }: { user: User}) {
-  const state = user
+export function userMock(flow: string, { user }: { user: User }) {
+  const state = user;
 
   const build = <T>(api: T) => ({
     setAppMetadata: (key: string, value: unknown) => {
@@ -16,5 +16,5 @@ export function userMock(flow: string, { user }: { user: User}) {
     },
   });
 
-  return { build, state }
+  return { build, state };
 }

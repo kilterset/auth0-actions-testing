@@ -421,17 +421,9 @@ test("PostLogin API", async (t) => {
 
         const { redirect } = state;
 
-        ok(redirect.target, "redirect not set");
-        deepStrictEqual(
-          redirect.target.queryParams,
-          {},
-          "query should be empty"
-        );
-        strictEqual(
-          redirect.target.url.href,
-          "https://example.com/r",
-          "url mismatch"
-        );
+        ok(redirect, "redirect not set");
+        deepStrictEqual(redirect.queryParams, {}, "query should be empty");
+        strictEqual(redirect.url.href, "https://example.com/r", "url mismatch");
       });
 
       await t.test("redirect with consolidated GET parameters", async (t) => {
@@ -446,16 +438,16 @@ test("PostLogin API", async (t) => {
 
         const { redirect } = state;
 
-        ok(redirect.target, "redirect not set");
+        ok(redirect, "redirect not set");
 
         deepStrictEqual(
-          redirect.target.queryParams,
+          redirect.queryParams,
           { bread: "rye", filling: "cheese", spread: "butter" },
           "unexpected query"
         );
 
         strictEqual(
-          redirect.target.url.href,
+          redirect.url.href,
           "https://example.com/?bread=rye&filling=cheese&spread=butter",
           "url mismatch"
         );

@@ -11,7 +11,7 @@ interface RedirectMockOptions {
 interface EncodeTokenOptions {
   expiresInSeconds?: number | undefined;
   payload: {
-      [key: string]: unknown;
+    [key: string]: unknown;
   };
   secret: string;
 }
@@ -25,7 +25,10 @@ interface ValidateTokenOptions {
   secret: string;
 }
 
-export function redirectMock(flow: string, { now: nowValue, request, user }: RedirectMockOptions) {
+export function redirectMock(
+  flow: string,
+  { now: nowValue, request, user }: RedirectMockOptions
+) {
   const now = new Date(nowValue || Date.now());
 
   const state = {
@@ -33,7 +36,11 @@ export function redirectMock(flow: string, { now: nowValue, request, user }: Red
   };
 
   const build = <T>(api: T) => ({
-    encodeToken: ({ expiresInSeconds, payload, secret }: EncodeTokenOptions) => {
+    encodeToken: ({
+      expiresInSeconds,
+      payload,
+      secret,
+    }: EncodeTokenOptions) => {
       expiresInSeconds = expiresInSeconds ?? 900;
 
       const claims = {
