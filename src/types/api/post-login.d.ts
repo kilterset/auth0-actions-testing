@@ -50,6 +50,10 @@ export interface PostLogin {
     enable(provider: string, options?: MultifactorEnableOptions): PostLogin;
   };
 
+  readonly prompt: {
+    render(promptId: string, promptOptions?: { [key: string]: unknown }): void;
+  };
+
   readonly rules: {
     wasExecuted(ruleId: string): boolean;
   };
