@@ -7,6 +7,7 @@ import { accessMock } from "./access";
 import { authenticationMock, FactorList } from "./authentication";
 import { idTokenMock } from "./id-token";
 import { multifactorMock } from "./multifactor";
+import { promptMock } from "./prompt";
 import { redirectMock } from "./redirect";
 import { userMock } from "./user";
 import { samlResponseMock } from "./saml-response";
@@ -103,6 +104,7 @@ export function postLogin({
   });
   const idToken = idTokenMock("PostLogin");
   const multifactor = multifactorMock("PostLogin");
+  const prompt = promptMock("PostLogin");
   const redirect = redirectMock("PostLogin", {
     now,
     request: requestValue,
@@ -149,6 +151,10 @@ export function postLogin({
 
     get multifactor() {
       return multifactor.build(api);
+    },
+
+    get prompt() {
+      return prompt.build(api);
     },
 
     get redirect() {
