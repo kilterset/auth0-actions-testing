@@ -1,4 +1,4 @@
-import Auth0, { Factor, MultifactorEnableOptions } from "../../types";
+import Auth0, { MultifactorEnableOptions, PromptState } from "../../types";
 import { cache as mockCache } from "./cache";
 import { user as mockUser } from "../user";
 import { request as mockRequest } from "../request";
@@ -69,6 +69,7 @@ export interface PostLoginState {
   idToken: {
     claims: Record<string, unknown>;
   };
+  prompt: { rendered: PromptState | null };
   multifactor: {
     enabled:
       | false
@@ -123,6 +124,7 @@ export function postLogin({
     cache: apiCache,
     idToken: idToken.state,
     multifactor: multifactor.state,
+    prompt: prompt.state,
     samlResponse: samlResponse.state,
     validation: validation.state,
     get redirect() {

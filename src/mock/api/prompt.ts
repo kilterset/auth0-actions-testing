@@ -1,9 +1,4 @@
-import { MultifactorEnableOptions } from "../../types";
-
-interface PromptState {
-  promptId: string;
-  promptOptions?: { [key: string]: unknown };
-}
+import { PromptState } from "../../types";
 
 export function promptMock(flow: string) {
   const state: { rendered: PromptState | null } = {
