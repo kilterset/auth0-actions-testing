@@ -6,6 +6,7 @@ export * from "./connection";
 export * from "./factor";
 export * from "./identity";
 export * from "./organization";
+export * from "./prompt";
 export * from "./request";
 export * from "./risk-assessment";
 export * from "./session";
