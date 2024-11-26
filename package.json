@@ -19,7 +19,8 @@
     "build": "tsc --build && npm run build:copy-declarations",
     "build:watch": "tsc --watch",
     "build:clean": "rm -rf dist; npm run build",
-    "build:copy-declarations": "cd src && rsync -Rv $(find . -name '*.d.ts') ../dist/"
+    "build:copy-declarations": "cd src && rsync -Rv $(find . -name '*.d.ts') ../dist/",
+    "release": "npm run build:clean && [ -d \"dist\" ] && npm publish --access public"
   },
   "contributors": [
     "Pete Nicholls <pnicholls@kilterset.com>",
