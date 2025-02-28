@@ -21,15 +21,16 @@ The following [Flows](https://auth0.com/docs/customize/actions/flows-and-trigger
 
 ## Getting started
 
-### Install Node.js v18
 
-**Important:** Node v18 LTS is latest version of Node.js Auth0 currently supports.
+### Install Node.js v22
 
-Make sure you're running Node v18. If you have a newer version of Node installed, we recommend using a Node version manager such as [`nvm`](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n).
+**Important:** Node v22 LTS is latest version of Node.js Auth0 currently supports.
+
+Make sure you're running Node v22. If you have a newer version of Node installed, we recommend using a Node version manager such as [`nvm`](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n).
 
 ```sh
 $ node --version
-v18.19.0
+v22.14.0.
 ```
 
 ### Set up your project
@@ -40,14 +41,14 @@ Create your project:
 npm init
 ```
 
-Add `"engines": { "node": "^18.19.0" }` to your `package.json` to enforce the correct version of Node.js:
+Add `"engines": { "node": "^22.14.0" }` to your `package.json` to enforce the correct version of Node.js:
 
 ```diff
 {
   "name": "example",
   "version": "1.0.0",
 + "engines": {
-+    "node": "^18.19.0"
++    "node": "^22.14.0"
 +  }
 }
 ```
@@ -60,7 +61,7 @@ npm install @kilterset/auth0-actions-testing --save-dev
 
 ### Writing your first test
 
-You can write tests with the built-in [Node.js Test Runner](https://nodejs.org/docs/latest-v18.x/api/test.html) and [assertions](https://nodejs.org/docs/latest-v18.x/api/assert.html).
+You can write tests with the built-in [Node.js Test Runner](https://nodejs.org/docs/latest-v22.x/api/test.html) and [assertions](https://nodejs.org/docs/latest-v22.x/api/assert.html).
 
 Here's a simple Action which records a lucky number on the user's `app_metadata` if they don't already have one:
 

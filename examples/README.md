@@ -19,7 +19,7 @@ Examples are organized into [Auth0 Flows](https://auth0.com/docs/customize/actio
 
 See [our GitHub Action](./github-action.yml).
 
-Typically, all you need to do is run `node --test` in CI with Node 18. This will use Node's built-in test runner to find all files matching `.test.js` and run them.
+Typically, all you need to do is run `node --test` in CI with Node 22. This will use Node's built-in test runner to find all files matching `.test.js` and run them.
 
 You can also add this to your `package.json`:
 
