@@ -21,7 +21,6 @@ The following [Flows](https://auth0.com/docs/customize/actions/flows-and-trigger
 
 ## Getting started
 
-
 ### Install Node.js v22
 
 **Important:** Node v22 LTS is latest version of Node.js Auth0 currently supports.
@@ -263,3 +262,9 @@ Follow the Getting Started instructions above to set up the project from here. W
 ## Running in CI
 
 See [our GitHub Actions example](https://github.com/kilterset/auth0-actions-testing/blob/main/examples/github-action.yml).
+
+## Contributors
+
+Thanks to the following people who have contributed patches or suggestions:
+
+- [bartzwork](https://github.com/bartzwork)
