@@ -24,18 +24,25 @@
   },
   "contributors": [
     "Pete Nicholls <pnicholls@kilterset.com>",
-    "Matt Wratt <mwratt@kilterset.com>"
+    "Matt Wratt <mwratt@kilterset.com>",
+    "Nathan Kramer <nkramer@kilterset.com>",
+    "Kris Sugandhi <ksugandhi@kilterset.com>"
   ],
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "@types/chance": "^1.1.6",
     "@types/fetch-mock": "^7.3.8",
-    "@types/node": "^22.13.5",
+    "@types/node": "^18.15.3",
     "chance": "^1.1.11",
     "fetch-mock": "^11.1.5",
     "fishery": "^2.2.2",
     "typescript": "^5.3.3"
+  },
+  "overrides": {
+    "node@22": {
+      "@types/node": "^22.13.9"
+    }
   },
   "main": "dist/index.js",
   "typings": "dist/index.d.ts"
