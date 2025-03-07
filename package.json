@@ -39,6 +39,12 @@
     "fishery": "^2.2.2",
     "typescript": "^5.3.3"
   },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.12"
+  },
+  "optionalDependencies": {
+    "node-fetch": "^2.7.0"
+  },
   "overrides": {
     "node@22": {
       "@types/node": "^22.13.9"
