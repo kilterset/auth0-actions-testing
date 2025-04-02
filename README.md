@@ -21,15 +21,15 @@ The following [Flows](https://auth0.com/docs/customize/actions/flows-and-trigger
 
 ## Getting started
 
-### Install Node.js v22
+### Switch to an Auth0-compatible version of Node.js
 
-**Important:** Node v22 LTS is latest version of Node.js Auth0 currently supports.
+Actions written using both Node 22 LTS and Node 18 LTS are supported by this library. Older Actions are not supported.
 
-Make sure you're running Node v22. If you have a newer version of Node installed, we recommend using a Node version manager such as [`nvm`](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n).
+If you have a newer version of Node installed, we recommend using a Node version manager such as [`nvm`](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n).
 
 ```sh
 $ node --version
-v22.14.0.
+v22.14.0
 ```
 
 ### Set up your project
