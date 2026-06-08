@@ -1,7 +1,7 @@
 import test from "node:test";
 import { strictEqual, deepStrictEqual, throws, ok } from "node:assert";
 import { postLogin } from "../../mock/api";
-import { request, user } from "../../mock";
+import { request, transaction, user } from "../../mock";
 import { encodeHS256JWT } from "../../jwt/hs256";
 
 test("PostLogin API", async (t) => {
@@ -51,6 +51,50 @@ test("PostLogin API", async (t) => {
     const { implementation: api, state } = postLogin();
     strictEqual(api.user.setUserMetadata("favourite_pet", "cat"), api);
     deepStrictEqual(state.user.user_metadata, { favourite_pet: "cat" });
+  });
+
+  await t.test("transaction metadata", async (t) => {
+    await t.test("is chainable", async (t) => {
+      const { implementation: api } = postLogin();
+      strictEqual(api.transaction.setMetadata("planet", "earth"), api);
+    });
+
+    await t.test("sets and overwrites metadata", async (t) => {
+      const { implementation: api, state } = postLogin();
+      api.transaction.setMetadata("planet", "earth");
+      deepStrictEqual(state.transaction.metadata, { planet: "earth" });
+      api.transaction.setMetadata("planet", "mars");
+      deepStrictEqual(state.transaction.metadata, { planet: "mars" });
+    });
+
+    await t.test("preserves number and boolean values", async (t) => {
+      const { implementation: api, state } = postLogin();
+      api.transaction.setMetadata("risk_score", 45);
+      api.transaction.setMetadata("verified", true);
+      deepStrictEqual(state.transaction.metadata, {
+        risk_score: 45,
+        verified: true,
+      });
+    });
+
+    await t.test("removes a key when set to null", async (t) => {
+      const { implementation: api, state } = postLogin();
+      api.transaction.setMetadata("planet", "earth");
+      api.transaction.setMetadata("planet", null);
+      deepStrictEqual(state.transaction.metadata, {});
+    });
+
+    await t.test("starts from existing transaction metadata", async (t) => {
+      const { implementation: api, state } = postLogin({
+        transaction: transaction({ metadata: { source: "google" } }),
+      });
+      deepStrictEqual(state.transaction.metadata, { source: "google" });
+      api.transaction.setMetadata("verified", "true");
+      deepStrictEqual(state.transaction.metadata, {
+        source: "google",
+        verified: "true",
+      });
+    });
   });
 
   await t.test("can set ID token claims", async (t) => {

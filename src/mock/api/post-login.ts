@@ -11,6 +11,7 @@ import { promptMock } from "./prompt";
 import { redirectMock } from "./redirect";
 import { userMock } from "./user";
 import { samlResponseMock } from "./saml-response";
+import { transactionMock } from "./transaction";
 import { validationMock } from "./validation";
 import { rulesMock } from "./rules";
 
@@ -20,6 +21,7 @@ export interface PostLoginOptions {
   executedRules?: string[];
   now?: ConstructorParameters<typeof Date>[0];
   request?: Auth0.Request;
+  transaction?: Auth0.Transaction;
 }
 
 type SamlAttributeValue =
@@ -79,6 +81,7 @@ export interface PostLoginState {
         };
   };
   samlResponse: SamlResponseState;
+  transaction: { metadata: Record<string, string | number | boolean> };
   validation: {
     error: { code: string; message: string } | null;
   };
@@ -91,6 +94,7 @@ export function postLogin({
   cache,
   executedRules: optionallyExecutedRules,
   now: nowValue,
+  transaction,
 }: PostLoginOptions = {}) {
   const userValue = user ?? mockUser();
   const executedRules = optionallyExecutedRules ?? [];
@@ -113,6 +117,9 @@ export function postLogin({
   });
   const userApiMock = userMock("PostLogin", { user: userValue });
   const samlResponse = samlResponseMock("PostLogin");
+  const transactionApiMock = transactionMock("PostLogin", {
+    metadata: transaction?.metadata,
+  });
   const validation = validationMock("PostLogin");
   const rules = rulesMock("PostLogin", { executedRules });
 
@@ -126,6 +133,7 @@ export function postLogin({
     multifactor: multifactor.state,
     prompt: prompt.state,
     samlResponse: samlResponse.state,
+    transaction: transactionApiMock.state,
     validation: validation.state,
     get redirect() {
       return redirect.state.target;
@@ -169,6 +177,10 @@ export function postLogin({
 
     get samlResponse() {
       return samlResponse.build(api);
+    },
+
+    get transaction() {
+      return transactionApiMock.build(api);
     },
 
     get user() {

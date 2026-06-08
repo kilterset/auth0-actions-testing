@@ -3,6 +3,14 @@ export interface Transaction {
   linking_id?: string;
   locale: string;
   login_hint?: string;
+
+  /**
+   * Metadata associated with the transaction, set by previous Actions in the
+   * same login flow via `api.transaction.setMetadata`. Values persist across
+   * sequential Actions and survive interruptions such as MFA or redirects.
+   */
+  metadata?: { [key: string]: string | number | boolean };
+
   prompt?: string[];
 
   protocol?: (

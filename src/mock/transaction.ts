@@ -8,6 +8,7 @@ export const transaction = define<Auth0.Transaction>(({ params }) => {
   return {
     acr_values: [],
     locale,
+    metadata: {},
     ui_locales: [locale],
     requested_scopes: [],
     protocol: chance.auth0().protocol(),
