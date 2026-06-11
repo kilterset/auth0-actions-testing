@@ -16,7 +16,7 @@ export function postLogin({
   Omit<PostLoginOptions, "user" | "request"> = {}) {
   const event = events.postLogin(attributes);
 
-  const { request, user } = event;
+  const { request, transaction, user } = event;
 
   const { implementation, state } = api.postLogin({
     user,
@@ -24,6 +24,7 @@ export function postLogin({
     now,
     executedRules,
     cache,
+    transaction,
   });
 
   async function simulate(handler: Handler) {

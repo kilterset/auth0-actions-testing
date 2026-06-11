@@ -82,6 +82,18 @@ export interface PostLogin {
     }): any;
   };
 
+  readonly transaction: {
+    /**
+     * Set a metadata value on the current transaction. The value is readable as
+     * `event.transaction.metadata[key]` by this and subsequent Actions in the
+     * same login flow. Passing `null` removes the key.
+     */
+    setMetadata(
+      key: string,
+      value: string | number | boolean | null
+    ): PostLogin;
+  };
+
   readonly user: {
     setAppMetadata: (key: string, value: string) => PostLogin;
     setUserMetadata: (key: string, value: string) => PostLogin;
